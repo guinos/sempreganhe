@@ -6,6 +6,7 @@ import {
   pgEnum,
   pgTable,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
   varchar,
@@ -70,7 +71,7 @@ export const promotions = pgTable(
   },
   (table) => [
     uniqueIndex("promotions_public_code_unique").on(table.publicCode),
-    uniqueIndex("promotions_id_restaurant_unique").on(table.id, table.restaurantId),
+    unique("promotions_id_restaurant_unique").on(table.id, table.restaurantId),
     index("promotions_restaurant_id_idx").on(table.restaurantId),
     index("promotions_status_idx").on(table.status),
     index("promotions_period_idx").on(table.startsAt, table.endsAt),
@@ -91,7 +92,7 @@ export const customers = pgTable(
   },
   (table) => [
     uniqueIndex("customers_restaurant_phone_unique").on(table.restaurantId, table.phone),
-    uniqueIndex("customers_id_restaurant_unique").on(table.id, table.restaurantId),
+    unique("customers_id_restaurant_unique").on(table.id, table.restaurantId),
     index("customers_restaurant_id_idx").on(table.restaurantId),
   ],
 );

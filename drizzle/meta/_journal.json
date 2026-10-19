@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1792432067416,
-      "tag": "0000_needy_zaran",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1792434186528,
-      "tag": "0001_closed_veda",
+      "when": 1792436080193,
+      "tag": "0000_fancy_tyger_tiger",
       "breakpoints": true
     }
   ]

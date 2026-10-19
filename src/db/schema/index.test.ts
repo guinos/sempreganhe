@@ -32,6 +32,10 @@ const columnNames = (table: Parameters<typeof getTableConfig>[0]) =>
 const indexedColumnNames = (index: ReturnType<typeof getTableConfig>["indexes"][number]) =>
   index.config.columns.map((column) => (column as { name?: string }).name);
 
+const uniqueConstraintColumnNames = (
+  constraint: ReturnType<typeof getTableConfig>["uniqueConstraints"][number],
+) => constraint.columns.map((column) => column.name);
+
 const tableNames = [restaurants, users, promotions, customers, participations].map(
   (table) => getTableConfig(table).name,
 );
@@ -140,6 +144,8 @@ it("allows an unregistered participation and declares integrity constraints", ()
   expect(promotionConfig.indexes.some((index) => index.config.unique && indexedColumnNames(index).includes("public_code"))).toBe(true);
   expect(participationConfig.indexes.some((index) => index.config.unique && indexedColumnNames(index).includes("public_token"))).toBe(true);
   expect(customerConfig.indexes.some((index) => index.config.unique && indexedColumnNames(index).join(",") === "restaurant_id,phone")).toBe(true);
+  expect(customerConfig.uniqueConstraints).toHaveLength(1);
+  expect(promotionConfig.uniqueConstraints).toHaveLength(1);
   expect(promotionConfig.checks).toHaveLength(1);
   expect(restaurantConfig.foreignKeys).toHaveLength(0);
   expect(userConfig.foreignKeys).toHaveLength(1);
@@ -154,9 +160,7 @@ it("declares tenant-consistent promotion and nullable customer foreign keys", ()
   const customerConfig = getTableConfig(customers);
   const participationConfig = getTableConfig(participations);
   const uniqueColumnPairs = (tableConfig: ReturnType<typeof getTableConfig>) =>
-    tableConfig.indexes
-      .filter((index) => index.config.unique)
-      .map((index) => indexedColumnNames(index).join(","));
+    tableConfig.uniqueConstraints.map((constraint) => uniqueConstraintColumnNames(constraint).join(","));
   const foreignKeyPairs = participationConfig.foreignKeys.map((foreignKey) => {
     const reference = foreignKey.reference();
     return {

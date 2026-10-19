@@ -11,6 +11,8 @@ export const databaseUrlSchema = z.string().refine((value) => {
 
 export const logLevelSchema = z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).default("info");
 
+export const authSecretSchema = z.string().min(32);
+
 export function parseEnv<T>(key: string, value: unknown, schema: z.ZodType<T>): T {
   const result = schema.safeParse(value);
   // Zod issues can include input values; expose only the variable name.

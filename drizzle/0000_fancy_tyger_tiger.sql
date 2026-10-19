@@ -7,7 +7,8 @@ CREATE TABLE "customers" (
 	"name" text NOT NULL,
 	"phone" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "customers_id_restaurant_unique" UNIQUE("id","restaurant_id")
 );
 --> statement-breakpoint
 CREATE TABLE "participations" (
@@ -23,6 +24,17 @@ CREATE TABLE "participations" (
 	"status" "participation_status" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "participations_status_fields_check" CHECK ((
+        "participations"."status" = 'pending_registration'
+        AND "participations"."customer_id" IS NULL
+        AND "participations"."registered_at" IS NULL
+        AND "participations"."privacy_accepted_at" IS NULL
+      ) OR (
+        "participations"."status" = 'redeemed'
+        AND "participations"."customer_id" IS NOT NULL
+        AND "participations"."registered_at" IS NOT NULL
+        AND "participations"."privacy_accepted_at" IS NOT NULL
+      ))
 );
 --> statement-breakpoint
 CREATE TABLE "promotions" (
@@ -36,6 +48,7 @@ CREATE TABLE "promotions" (
 	"ends_at" timestamp with time zone NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "promotions_id_restaurant_unique" UNIQUE("id","restaurant_id"),
 	CONSTRAINT "promotions_valid_period_check" CHECK ("promotions"."ends_at" > "promotions"."starts_at")
 );
 --> statement-breakpoint
@@ -56,6 +69,7 @@ CREATE TABLE "users" (
 	"role" "user_role" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "users_email_lowercase_check" CHECK ("users"."email" = lower("users"."email"))
 );
 --> statement-breakpoint
 ALTER TABLE "customers" ADD CONSTRAINT "customers_restaurant_id_restaurants_id_fk" FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -65,14 +79,12 @@ ALTER TABLE "participations" ADD CONSTRAINT "participations_customer_restaurant_
 ALTER TABLE "promotions" ADD CONSTRAINT "promotions_restaurant_id_restaurants_id_fk" FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_restaurant_id_restaurants_id_fk" FOREIGN KEY ("restaurant_id") REFERENCES "public"."restaurants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "customers_restaurant_phone_unique" ON "customers" USING btree ("restaurant_id","phone");--> statement-breakpoint
-CREATE UNIQUE INDEX "customers_id_restaurant_unique" ON "customers" USING btree ("id","restaurant_id");--> statement-breakpoint
 CREATE INDEX "customers_restaurant_id_idx" ON "customers" USING btree ("restaurant_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "participations_public_token_unique" ON "participations" USING btree ("public_token");--> statement-breakpoint
 CREATE INDEX "participations_restaurant_id_idx" ON "participations" USING btree ("restaurant_id");--> statement-breakpoint
 CREATE INDEX "participations_promotion_id_idx" ON "participations" USING btree ("promotion_id");--> statement-breakpoint
 CREATE INDEX "participations_customer_id_idx" ON "participations" USING btree ("customer_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "promotions_public_code_unique" ON "promotions" USING btree ("public_code");--> statement-breakpoint
-CREATE UNIQUE INDEX "promotions_id_restaurant_unique" ON "promotions" USING btree ("id","restaurant_id");--> statement-breakpoint
 CREATE INDEX "promotions_restaurant_id_idx" ON "promotions" USING btree ("restaurant_id");--> statement-breakpoint
 CREATE INDEX "promotions_status_idx" ON "promotions" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "promotions_period_idx" ON "promotions" USING btree ("starts_at","ends_at");--> statement-breakpoint

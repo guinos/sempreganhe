@@ -1,5 +1,5 @@
 {
-  "id": "56c733e4-b08a-4bff-9e88-e077dd6c21ba",
+  "id": "ff16b0da-a855-4688-b15e-05e96b906179",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -70,27 +70,6 @@
           "method": "btree",
           "with": {}
         },
-        "customers_id_restaurant_unique": {
-          "name": "customers_id_restaurant_unique",
-          "columns": [
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "restaurant_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "customers_restaurant_id_idx": {
           "name": "customers_restaurant_id_idx",
           "columns": [
@@ -123,7 +102,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "customers_id_restaurant_unique": {
+          "name": "customers_id_restaurant_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "restaurant_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -319,7 +307,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "participations_status_fields_check": {
+          "name": "participations_status_fields_check",
+          "value": "(\n        \"participations\".\"status\" = 'pending_registration'\n        AND \"participations\".\"customer_id\" IS NULL\n        AND \"participations\".\"registered_at\" IS NULL\n        AND \"participations\".\"privacy_accepted_at\" IS NULL\n      ) OR (\n        \"participations\".\"status\" = 'redeemed'\n        AND \"participations\".\"customer_id\" IS NOT NULL\n        AND \"participations\".\"registered_at\" IS NOT NULL\n        AND \"participations\".\"privacy_accepted_at\" IS NOT NULL\n      )"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.promotions": {
@@ -407,27 +400,6 @@
           "method": "btree",
           "with": {}
         },
-        "promotions_id_restaurant_unique": {
-          "name": "promotions_id_restaurant_unique",
-          "columns": [
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "restaurant_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "promotions_restaurant_id_idx": {
           "name": "promotions_restaurant_id_idx",
           "columns": [
@@ -496,7 +468,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "promotions_id_restaurant_unique": {
+          "name": "promotions_id_restaurant_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "restaurant_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {
         "promotions_valid_period_check": {
@@ -675,7 +656,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "users_email_lowercase_check": {
+          "name": "users_email_lowercase_check",
+          "value": "\"users\".\"email\" = lower(\"users\".\"email\")"
+        }
+      },
       "isRLSEnabled": false
     }
   },
