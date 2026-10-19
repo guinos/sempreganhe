@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Participation } from "@/db/schema";
-import { completeParticipation } from "./participation";
+import { completeParticipation, confirmParticipation, rejectParticipation } from "./participation";
 
 const createdAt = new Date("2026-10-19T09:00:00.000Z");
 const completedAt = new Date("2026-10-19T12:00:00.000Z");
@@ -10,12 +10,12 @@ function participation(status: Participation["status"] = "pending_registration")
     id: "participation-id",
     restaurantId: "restaurant-id",
     promotionId: "promotion-id",
-    customerId: status === "redeemed" ? "old-customer-id" : null,
+    customerId: status === "pending_confirmation" || status === "redeemed" ? "old-customer-id" : null,
     publicToken: "public-token",
     prizeDescription: "Um café",
-    privacyAcceptedAt: status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,
+    privacyAcceptedAt: status === "pending_confirmation" || status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,
     scrapedAt: new Date("2026-10-19T09:30:00.000Z"),
-    registeredAt: status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,
+    registeredAt: status === "pending_confirmation" || status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,
     status,
     createdAt,
     updatedAt: createdAt,
@@ -33,7 +33,7 @@ describe("completeParticipation", () => {
       customerId: "customer-id",
       privacyAcceptedAt: completedAt,
       registeredAt: completedAt,
-      status: "redeemed",
+      status: "pending_confirmation",
     });
   });
 
@@ -69,8 +69,16 @@ describe("completeParticipation", () => {
     expect(result).not.toBe(original);
   });
 
-  it("returns a redeemed copy on an idempotent retry with an empty customer id", () => {
-    const original = participation("redeemed");
+  it("is idempotent for an already pending confirmation participation", () => {
+    const original = participation("pending_confirmation");
+    const result = completeParticipation(original, { customerId: "new-customer-id", completedAt });
+
+    expect(result).toEqual(original);
+    expect(result).not.toBe(original);
+  });
+
+  it("returns a pending confirmation copy on an idempotent retry with an empty customer id", () => {
+    const original = participation("pending_confirmation");
     const result = completeParticipation(original, { customerId: "", completedAt });
 
     expect(result).toEqual(original);
@@ -89,5 +97,16 @@ describe("completeParticipation", () => {
     expect(() => completeParticipation(invalid, { customerId: "customer-id", completedAt })).toThrow(
       "Unknown participation status: unknown",
     );
+  });
+
+  it("confirms a pending confirmation participation", () => {
+    const result = confirmParticipation(participation("pending_confirmation"), completedAt);
+    expect(result.status).toBe("redeemed");
+    expect(result.updatedAt).toBe(completedAt);
+  });
+
+  it("rejects a pending confirmation participation", () => {
+    const result = rejectParticipation(participation("pending_confirmation"), completedAt);
+    expect(result.status).toBe("rejected");
   });
 });

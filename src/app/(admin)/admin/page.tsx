@@ -1,5 +1,7 @@
 import { requireAdminSession } from "@/lib/auth";
 import PromotionsPanel from "./promotions-panel";
+import ParticipationsPanel from "./participations-panel";
+import RestaurantPanel from "./restaurant-panel";
 
 export default async function AdminPage() {
   const session = await requireAdminSession();
@@ -13,6 +15,8 @@ export default async function AdminPage() {
         </div>
       </header>
       <PromotionsPanel />
+      <RestaurantPanel />
+      <ParticipationsPanel />
     </main>
   );
 }

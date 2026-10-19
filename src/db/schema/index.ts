@@ -16,7 +16,7 @@ import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 export const userRole = pgEnum("user_role", ["owner", "admin"]);
 export const promotionStatus = pgEnum("promotion_status", ["draft", "active", "paused", "ended"]);
-export const participationStatus = pgEnum("participation_status", ["pending_registration", "redeemed"]);
+export const participationStatus = pgEnum("participation_status", ["pending_registration", "pending_confirmation", "redeemed", "rejected"]);
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -137,7 +137,7 @@ export const participations = pgTable(
         AND ${table.registeredAt} IS NULL
         AND ${table.privacyAcceptedAt} IS NULL
       ) OR (
-        ${table.status} = 'redeemed'
+        ${table.status} IN ('pending_confirmation', 'redeemed', 'rejected')
         AND ${table.customerId} IS NOT NULL
         AND ${table.registeredAt} IS NOT NULL
         AND ${table.privacyAcceptedAt} IS NOT NULL

@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({ redirect: vi.fn((path: string) => { throw ne
 
 import { POST as login } from "@/app/api/auth/login/route";
 import { POST as logout } from "@/app/api/auth/logout/route";
-import AdminLayout from "@/app/(admin)/layout";
+import AdminLayout from "@/app/(admin)/admin/layout";
 import AdminPage from "@/app/(admin)/admin/page";
 
 function request(body: unknown) {

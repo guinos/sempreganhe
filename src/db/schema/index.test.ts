@@ -109,7 +109,7 @@ it("defines the required columns and timestamp behavior", () => {
 it("defines the approved enum values", () => {
   expect(userRole.enumValues).toEqual(["owner", "admin"]);
   expect(promotionStatus.enumValues).toEqual(["draft", "active", "paused", "ended"]);
-  expect(participationStatus.enumValues).toEqual(["pending_registration", "redeemed"]);
+  expect(participationStatus.enumValues).toEqual(["pending_registration", "pending_confirmation", "redeemed", "rejected"]);
 });
 
 it("declares the lowercase email check while keeping email unique", () => {
