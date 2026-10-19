@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sempreganhe-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sempreganhe
+      POSTGRES_USER: sempreganhe
+      POSTGRES_PASSWORD: sempreganhe_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - sempreganhe-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sempreganhe -d sempreganhe"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sempreganhe-postgres-data:
