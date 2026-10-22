@@ -1,13 +1,13 @@
-# Tipografia — piloto v0.1
+# Tipografia — nova direção v0.3
 
 ## Direção
 
-Tipografia arredondada e expressiva nos momentos de prêmio; texto neutro e altamente legível na operação do restaurante.
+Tipografia com presença editorial e acabamento premium nos momentos de campanha; texto neutro e altamente legível na operação do restaurante.
 
 | Papel | Família proposta | Pesos |
 |---|---|---|
-| Display | `Baloo 2` | 700, 800 |
-| Interface e corpo | `Nunito Sans` | 400, 600, 700, 800 |
+| Display | `Barlow Condensed` ou `Roboto Slab` | 700, 800 |
+| Interface e corpo | `Manrope` | 400, 500, 600, 700 |
 | Dados/QR/códigos | `ui-monospace` | 500, 700 |
 
 Ambas as famílias são alternativas abertas para web. A decisão final deve ser validada no bundle e no carregamento mobile.
@@ -25,4 +25,4 @@ Ambas as famílias são alternativas abertas para web. A decisão final deve ser
 | `text-body-sm` | 14 / 1.45 | Apoio e metadados |
 | `text-label` | 14 / 1.2 | Botões e labels |
 
-Regra: o display pode ser energético; o texto operacional não deve parecer um anúncio de cassino.
+Regra: o display deve parecer uma campanha premium; o texto operacional deve permanecer simples e confiável, sem parecer uma casa de apostas.

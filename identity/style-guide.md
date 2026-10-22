@@ -1,6 +1,6 @@
-# Guia de marca SempreGanhe — v0.2
+# Guia de marca SempreGanhe — v0.3
 
-Status: **em consolidação**
+Status: **nova direção em consolidação**
 
 ## Essência
 
@@ -10,18 +10,18 @@ O SempreGanhe transforma uma promoção de restaurante em uma experiência simpl
 
 ## Direção visual
 
-Cassino casual + games multicolorido. A linguagem deve gerar expectativa e diversão, mas nunca sugerir aposta financeira.
+Cassino premium + promoção digital. A linguagem deve gerar expectativa e valor percebido, mas nunca sugerir aposta financeira.
 
 ## Assinatura visual
 
-O elemento proprietário é o cartão de raspadinha sendo revelado por um dedo. A estrela aparece como prêmio descoberto; ela não é o símbolo principal isolado.
+O elemento proprietário é o cartão de raspadinha sendo revelado. O acabamento visual é preto fosco, dourado e vermelho profundo; a estrela aparece como prêmio descoberto, não como símbolo isolado.
 
 ## Sistema
 
 - Logo: usar os arquivos em `identity/logo/`.
-- Cor: usar os tokens documentados em `colors.md`.
-- Tipografia: `Baloo 2` para momentos de destaque e `Nunito Sans` para interface e leitura.
-- Imagem: ilustração digital multicolorida, fundo roxo-noite e brilho controlado.
+- Cor: usar os tokens documentados em `colors.md`, com preto fosco dominante, dourado de valor e vermelho de ação.
+- Tipografia: `Barlow Condensed` ou `Roboto Slab` para destaque e `Manrope` para interface e leitura.
+- Imagem: composição premium, fundo preto fosco, luz dourada, vermelho profundo e brilho controlado.
 - Ícones: formas arredondadas em grade 24×24.
 - Motion: raspagem e revelação como interação assinatura.
 

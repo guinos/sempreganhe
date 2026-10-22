@@ -1,24 +1,22 @@
 :root {
-  --sg-brand-midnight: #140b2e;
-  --sg-brand-purple: #6d28d9;
-  --sg-brand-gold: #ffc857;
-  --sg-brand-gold-text: #8a5a00;
-  --sg-brand-cyan: #22d3ee;
-  --sg-brand-pink: #f43f5e;
-  --sg-brand-orange: #ff8a00;
-  --sg-brand-blue: #119bd7;
-  --sg-brand-violet: #8b35e8;
+  --sg-brand-matte-black: #111111;
+  --sg-brand-black: #050505;
+  --sg-brand-gold: #c9a24a;
+  --sg-brand-gold-light: #e7c873;
+  --sg-brand-gold-text: #765a12;
+  --sg-brand-red: #a61b2b;
+  --sg-brand-red-bright: #c92a3a;
+  --sg-brand-cream: #f4efe5;
 
   --sg-neutral-0: #ffffff;
-  --sg-neutral-100: #f8f7fc;
-  --sg-neutral-300: #d8d3e5;
-  --sg-neutral-700: #514a61;
-  --sg-neutral-950: #17131f;
+  --sg-neutral-300: #d6d1c8;
+  --sg-neutral-700: #625e57;
+  --sg-neutral-950: #171717;
 
-  --sg-success: #15803d;
-  --sg-warning: #a16207;
-  --sg-error: #b91c1c;
-  --sg-info: #0e7490;
+  --sg-success: #1f7a4d;
+  --sg-warning: #a66b16;
+  --sg-error: #b42332;
+  --sg-info: #356b73;
 
   --sg-radius-card: 24px;
   --sg-radius-control: 14px;

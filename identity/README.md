@@ -1,14 +1,14 @@
 # SempreGanhe — pilotos de identidade
 
-Status: **referência visual selecionada — em consolidação**
+Status: **nova direção em consolidação — v0.3**
 
-Direção aprovada: **cassino casual + games multicolorido**. A marca deve transmitir expectativa, descoberta e recompensa, sem parecer uma casa de apostas.
+Direção atual: **cassino premium + promoção digital**. A marca deve transmitir valor, exclusividade, expectativa e recompensa, sem parecer uma casa de apostas.
 
 Slogan aprovado: **Promoção que vira jogo.**
 
-Referência visual selecionada: `Guia de marca SempreGanhe multicolorido.png`.
+Referências atuais: preto fosco e dourado da imagem enviada pelo cliente, com vermelho inspirado na linguagem visual de campanhas de cassino/bet compartilhada.
 
-A composição aprovada combina cartão de raspadinha, dedo/toque, área parcialmente revelada, estrela como prêmio e wordmark branco/amarelo sobre fundo roxo escuro.
+A composição futura deve combinar raspadinha digital, prêmio revelado, acabamento premium e contraste alto em preto, dourado e vermelho.
 
 O slogan deve aparecer em materiais de campanha, apresentações da marca e momentos institucionais. Na interface de participação, pode ser substituído por chamadas mais diretas como “Raspe e descubra seu prêmio”.
 
@@ -22,7 +22,7 @@ O slogan deve aparecer em materiais de campanha, apresentações da marca e mome
 - `pilots/logo-pilot-06-hidden-prize.svg` — prêmio escondido sob a camada
 - `pilots/logo-primary-revised.svg` — versão revisada selecionada para evolução
 
-Os pilotos anteriores são hipóteses de exploração. A referência visual selecionada passa a ser a base para consolidar o logo definitivo em formatos vetoriais e transparentes.
+Os pilotos anteriores são hipóteses de exploração da direção multicolorida. A nova direção v0.3 passa a ser a base para o próximo piloto de logo.
 
 ## Pacote consolidado
 

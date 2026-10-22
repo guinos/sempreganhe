@@ -2,11 +2,11 @@
 
 ## Direção
 
-Ilustrações digitais multicoloridas com alto contraste, fundos roxo-noite, brilhos controlados e foco no ato de raspar: cartão, dedo, camada prateada e prêmio revelado.
+Imagens e composições premium com alto contraste, fundo preto fosco, luz dourada e acentos vermelhos. O foco continua no ato de raspar: cartão, camada removida e prêmio revelado.
 
 - Composição: foco central, espaço claro para o prêmio e leitura imediata no celular.
-- Luz: brilho radial e reflexos dourados, sem excesso de lens flare.
-- Textura: granulação ou pontilhado discreto para dar materialidade de game.
+- Luz: iluminação lateral dramática, reflexos dourados e vermelho profundo, sem excesso de lens flare.
+- Textura: granulação fina, metal escovado, veludo ou papel premium; sempre com moderação.
 - Pessoas: espontâneas e reais; evitar fotos genéricas de cassino, luxo ou apostas.
 - Rejeitar: roletas hiper-realistas, dinheiro, fichas empilhadas, jackpots financeiros e estética de bet agressiva.
 - A estrela pode aparecer como prêmio revelado, mas não deve substituir o cartão e o gesto de raspar.

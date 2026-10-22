@@ -1,6 +1,6 @@
 # Logo SempreGanhe — v0.2
 
-Versão vetorial baseada na referência visual aprovada em `brand-reference.md`.
+Este diretório contém a primeira consolidação vetorial. Os arquivos atuais em roxo/multicolorido pertencem à direção anterior e devem ser tratados como **legado de exploração** até a criação do novo piloto preto, dourado e vermelho.
 
 ## Arquivos
 
@@ -17,4 +17,4 @@ Versão vetorial baseada na referência visual aprovada em `brand-reference.md`.
 - Não esticar, girar, aplicar sombra externa adicional ou alterar as cores do wordmark.
 - Tamanho mínimo sugerido: 180 px de largura na versão horizontal e 32 px no símbolo.
 
-Estes SVGs são a primeira consolidação vetorial e devem ser revisados visualmente antes de serem considerados o master definitivo.
+Estes SVGs não são o master definitivo da nova direção. O próximo pacote deve substituir a paleta anterior e manter apenas as versões aprovadas após revisão visual.

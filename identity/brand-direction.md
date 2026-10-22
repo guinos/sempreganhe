@@ -4,18 +4,18 @@
 
 Uma promoção de restaurante que transforma um benefício simples em uma experiência digital de descoberta.
 
-## Referência selecionada
+## Conceito atual — v0.3
 
-O conjunto visual aprovado é o arquivo `Guia de marca SempreGanhe multicolorido.png`, fornecido pelo cliente. Ele define a direção principal para o logo e para as artes:
+As novas referências fornecidas pelo cliente definem uma linguagem de cassino premium com:
 
-- cartão de raspadinha inclinado;
-- dedo realizando o gesto de raspar;
-- área prateada parcialmente removida;
-- estrela dourada como prêmio revelado;
-- wordmark “Sempre” branco e “Ganhe” amarelo/laranja;
-- contorno escuro espesso;
-- fundo roxo profundo com brilho multicolorido;
-- detalhes de energia em ciano, azul, roxo e laranja.
+- preto fosco como campo principal;
+- dourado metálico como cor de valor e recompensa;
+- vermelho profundo como cor de energia, urgência e ação;
+- iluminação dramática e contraste alto;
+- composição mais sóbria, sofisticada e editorial;
+- referências de social media de cassino, adaptadas para promoção de restaurantes.
+
+O vermelho será usado como acento controlado. O SempreGanhe não deve copiar a linguagem de casas de apostas nem prometer lucro financeiro.
 
 ## Slogan
 
@@ -38,4 +38,4 @@ O conjunto visual aprovado é o arquivo `Guia de marca SempreGanhe multicolorido
 
 Raspadinha parcialmente revelada, textura de superfície sendo removida, dedo interagindo com a tela, prêmio aparecendo em camadas e microanimações de celebração.
 
-O gesto de raspar é o elemento proprietário da marca. A estrela não funciona mais como símbolo isolado: ela representa o prêmio que aparece quando a camada é removida.
+O gesto de raspar continua sendo o elemento proprietário. A estrela pode representar o prêmio, mas deve aparecer integrada ao cartão e ao acabamento dourado, nunca como símbolo genérico isolado.
