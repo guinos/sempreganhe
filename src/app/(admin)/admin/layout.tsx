@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 lg:pl-72">
+    <div className="min-h-screen bg-slate-50 sm:pl-72">
       <AdminNavigation />
       {children}
     </div>

@@ -45,7 +45,7 @@ export default function AdminNavigation() {
   }
 
   return (
-    <aside className="border-b bg-slate-950 text-white lg:fixed lg:inset-y-0 lg:w-72 lg:border-b-0 lg:border-r lg:border-slate-800">
+    <aside className="border-b bg-slate-950 text-white sm:fixed sm:inset-y-0 sm:left-0 sm:w-72 sm:border-b-0 sm:border-r sm:border-slate-800">
       <div className="flex h-full flex-col p-4 sm:p-6">
         <div className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">SempreGanhe</p>
