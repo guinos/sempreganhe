@@ -8,6 +8,13 @@ import { partners, type Partner } from "@/db/schema";
 export const partnerUpdateSchema = z.object({
   name: z.string().trim().min(2).max(160),
   slug: z.string().trim().min(2).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid slug"),
+  whatsappPhone: z.string().trim().max(32).nullable(),
+  address: z.string().trim().max(500).nullable(),
+  hideAddress: z.boolean(),
+  currency: z.enum(["BRL", "USD", "EUR"]),
+  language: z.enum(["pt-BR", "en-US", "es-ES"]),
+  businessType: z.string().trim().max(80).nullable(),
+  businessHours: z.string().trim().max(1_000).nullable(),
 });
 
 export class PartnerNotFoundError extends Error {

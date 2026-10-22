@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   const email = body.email.trim().toLowerCase();
   const [user] = await findAdminUserByEmail(email);
-  if (!user || (user.role !== "owner" && user.role !== "admin") || !(await verifyPassword(body.password, user.passwordHash))) {
+  if (!user || user.active === false || (user.role !== "owner" && user.role !== "admin") || !(await verifyPassword(body.password, user.passwordHash))) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 

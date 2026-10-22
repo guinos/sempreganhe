@@ -12,9 +12,9 @@ const menuGroups: Array<{ label: string; items: MenuItem[] }> = [
   {
     label: "Configurações",
     items: [
-      { label: "Minha conta", available: false },
-      { label: "Info do negócio", href: "#partner" },
-      { label: "Equipe", available: false },
+      { label: "Minha conta", href: "/admin/account" },
+      { label: "Info do negócio", href: "/admin/business" },
+      { label: "Equipe", href: "/admin/team" },
     ],
   },
   {

@@ -49,13 +49,31 @@ it("exports the five tenant-aware domain tables", () => {
 });
 
 it("defines the required columns and timestamp behavior", () => {
-  expect(columnNames(partners)).toEqual(["id", "name", "slug", "created_at", "updated_at"]);
+  expect(columnNames(partners)).toEqual([
+    "id",
+    "name",
+    "slug",
+    "whatsapp_phone",
+    "address",
+    "hide_address",
+    "currency",
+    "language",
+    "business_type",
+    "business_hours",
+    "created_at",
+    "updated_at",
+  ]);
   expect(columnNames(users)).toEqual([
     "id",
     "partner_id",
     "name",
     "email",
     "password_hash",
+    "phone",
+    "document_type",
+    "document_number",
+    "billing_address",
+    "active",
     "role",
     "created_at",
     "updated_at",
