@@ -20,7 +20,7 @@ vi.mock("@/lib/promotions", () => ({ listPromotions, createPromotion, PromotionC
 
 import { GET, POST } from "./route";
 
-const session = { userId: "user-1", restaurantId: "restaurant-1" };
+const session = { userId: "user-1", partnerId: "partner-1" };
 
 function request(body?: unknown) {
   return new Request("http://localhost/api/admin/promotions", {
@@ -38,17 +38,17 @@ beforeEach(() => {
 });
 
 describe("admin promotions collection routes", () => {
-  it("lists promotions using the session restaurant", async () => {
+  it("lists promotions using the session partner", async () => {
     const response = await GET();
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ promotions: [] });
-    expect(listPromotions).toHaveBeenCalledWith(session.restaurantId);
+    expect(listPromotions).toHaveBeenCalledWith(session.partnerId);
   });
 
-  it("creates a promotion without accepting restaurantId from the payload", async () => {
+  it("creates a promotion without accepting partnerId from the payload", async () => {
     const payload = {
-      restaurantId: "attacker-restaurant",
+      partnerId: "attacker-partner",
       title: "Prêmio",
       prizeDescription: "Sobremesa grátis",
       publicCode: "CODIGO",
@@ -60,13 +60,13 @@ describe("admin promotions collection routes", () => {
     const response = await POST(request(payload));
 
     expect(response.status).toBe(201);
-    expect(createPromotion).toHaveBeenCalledWith(session.restaurantId, expect.objectContaining({
+    expect(createPromotion).toHaveBeenCalledWith(session.partnerId, expect.objectContaining({
       title: payload.title,
       publicCode: payload.publicCode,
       startsAt: new Date(payload.startsAt),
       endsAt: new Date(payload.endsAt),
     }));
-    expect(createPromotion.mock.calls[0][1]).not.toHaveProperty("restaurantId");
+    expect(createPromotion.mock.calls[0][1]).not.toHaveProperty("partnerId");
   });
 
   it("returns 401 when the admin session is missing", async () => {

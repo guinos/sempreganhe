@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "next typegen && tsc --noEmit",
     "lint:typed": "eslint --config eslint.typed.config.mjs .",
     "lint:rules": "node scripts/verify-quality-rules.mjs ./eslint-rules/index.cjs",
@@ -29,7 +30,9 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@next/env": "^16.4.2",
+    "@next/eslint-plugin-next": "^16.4.2",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24.19.2",
     "@types/pg": "^8.23.1",
@@ -38,9 +41,16 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-drizzle": "^0.2.3",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-security": "^4.2.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "typescript-eslint": "^8.71.2",
     "vitest": "^5.0.5"
   },
   "packageManager": "pnpm@11.25.0"

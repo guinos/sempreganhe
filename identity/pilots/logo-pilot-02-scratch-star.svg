@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Piloto 02 — SempreGanhe Scratch Star</title>
+  <desc id="desc">Cartão de raspadinha roxo com estrela revelada ao lado do nome SempreGanhe.</desc>
+  <rect width="720" height="220" rx="36" fill="#F8F7FC"/>
+  <g transform="translate(52 44)">
+    <rect x="0" y="0" width="132" height="132" rx="28" fill="#6D28D9" transform="rotate(-8 66 66)"/>
+    <path d="m66 20 12 33 35 2-27 22 9 35-29-19-30 19 10-35-28-22 36-2z" fill="#FFC857"/>
+    <path d="M18 102c22 18 49 26 88 14" fill="none" stroke="#22D3EE" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <text x="220" y="107" fill="#17131F" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Sempre<tspan fill="#6D28D9">Ganhe</tspan></text>
+  <text x="224" y="144" fill="#8A5A00" font-family="Nunito Sans,Arial,sans-serif" font-size="17" font-weight="800" letter-spacing="3">A SORTE COMEÇA AQUI</text>
+</svg>

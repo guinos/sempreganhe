@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const response = NextResponse.json({ ok: true });
   response.cookies.set(
     ADMIN_SESSION_COOKIE_NAME,
-    createAdminSessionToken({ userId: user.id, restaurantId: user.restaurantId }),
+    createAdminSessionToken({ userId: user.id, partnerId: user.partnerId }),
     ADMIN_SESSION_COOKIE_OPTIONS,
   );
   return response;

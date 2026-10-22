@@ -6,10 +6,10 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
   try {
-    const { restaurantId } = await requireAdminSession();
+    const { partnerId } = await requireAdminSession();
     const { id } = await context.params;
     const input = promotionUpdateSchema.parse(await request.json());
-    return NextResponse.json({ promotion: await updatePromotion(restaurantId, id, input) });
+    return NextResponse.json({ promotion: await updatePromotion(partnerId, id, input) });
   } catch (error) {
     return handleError(error);
   }
@@ -17,9 +17,9 @@ export async function PATCH(request: Request, context: RouteContext) {
 
 export async function DELETE(_request: Request, context: RouteContext) {
   try {
-    const { restaurantId } = await requireAdminSession();
+    const { partnerId } = await requireAdminSession();
     const { id } = await context.params;
-    await deletePromotion(restaurantId, id);
+    await deletePromotion(partnerId, id);
     return NextResponse.json({ ok: true });
   } catch (error) {
     return handleError(error);

@@ -37,19 +37,19 @@ describe("admin authentication foundation", () => {
 
   it("creates and verifies a token containing only the session identity and expiry", () => {
     vi.stubEnv("AUTH_SECRET", AUTH_SECRET);
-    const token = createAdminSessionToken({ userId: "user-1", restaurantId: "restaurant-1" }, 60);
+    const token = createAdminSessionToken({ userId: "user-1", partnerId: "partner-1" }, 60);
 
     expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
     expect(token).not.toContain(AUTH_SECRET);
     expect(token).not.toContain("password");
     expect(token).not.toContain("hash");
     expect(token).not.toContain("phone");
-    expect(verifyAdminSessionToken(token)).toEqual({ userId: "user-1", restaurantId: "restaurant-1" });
+    expect(verifyAdminSessionToken(token)).toEqual({ userId: "user-1", partnerId: "partner-1" });
   });
 
   it("rejects an invalid signature", () => {
     vi.stubEnv("AUTH_SECRET", AUTH_SECRET);
-    const token = createAdminSessionToken({ userId: "user-1", restaurantId: "restaurant-1" }, 60);
+    const token = createAdminSessionToken({ userId: "user-1", partnerId: "partner-1" }, 60);
     const [payload] = token.split(".");
 
     expect(() => verifyAdminSessionToken(`${payload}.invalid`)).toThrow(AdminSessionError);
@@ -60,7 +60,7 @@ describe("admin authentication foundation", () => {
     const malformedPayload = Buffer.from(JSON.stringify({ userId: "user-1" })).toString("base64url");
     expect(() => verifyAdminSessionToken(`${malformedPayload}.invalid`)).toThrow(AdminSessionError);
 
-    const expiredToken = createAdminSessionToken({ userId: "user-1", restaurantId: "restaurant-1" }, -1);
+    const expiredToken = createAdminSessionToken({ userId: "user-1", partnerId: "partner-1" }, -1);
     expect(() => verifyAdminSessionToken(expiredToken)).toThrow(AdminSessionError);
   });
 

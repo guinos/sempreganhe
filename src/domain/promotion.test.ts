@@ -8,7 +8,7 @@ const endsAt = new Date("2026-10-19T18:00:00.000Z");
 function promotion(status: Promotion["status"]): Promotion {
   return {
     id: "promotion-id",
-    restaurantId: "restaurant-id",
+    partnerId: "partner-id",
     title: "Café grátis",
     prizeDescription: "Um café",
     publicCode: "CAFE",

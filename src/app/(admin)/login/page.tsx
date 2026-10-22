@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -36,7 +37,7 @@ export default function LoginPage() {
           Senha
           <input className="rounded border p-2" name="password" type="password" required />
         </label>
-        {error && <p role="alert">E-mail ou senha inválidos.</p>}
+        {error ? <p role="alert">E-mail ou senha inválidos.</p> : null}
         <button className="rounded bg-black px-4 py-2 text-white" type="submit">
           Entrar
         </button>

@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 
 type Promotion = {
   id: string;
@@ -28,7 +28,6 @@ export default function PromotionsPanel() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const router = useRouter();
 
   async function fetchPromotions() {
     const response = await fetch("/api/admin/promotions");
@@ -69,11 +68,6 @@ export default function PromotionsPanel() {
     }
   }
 
-  async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-  }
-
   return (
     <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
       <form className="flex flex-col gap-4 rounded-xl border p-6" onSubmit={(event) => void submit(event)}>
@@ -90,11 +84,11 @@ export default function PromotionsPanel() {
           <label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" required type="datetime-local" value={form.endsAt} onChange={(event) => setForm({ ...form, endsAt: event.target.value })} /></label>
         </div>
         <button className="rounded bg-black px-4 py-2 text-white disabled:opacity-50" disabled={saving} type="submit">{saving ? "Salvando..." : "Criar promoção"}</button>
-        {message && <p aria-live="polite" className="text-sm">{message}</p>}
+        {message ? <p aria-live="polite" className="text-sm">{message}</p> : null}
       </form>
 
-      <div className="rounded-xl border p-6">
-        <div className="mb-4 flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">Promoções cadastradas</h2><button className="text-sm underline" onClick={() => void logout()} type="button">Sair</button></div>
+      <div className="rounded-xl border p-6" id="promotions-list">
+        <div className="mb-4 flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">Promoções cadastradas</h2></div>
         {loading ? <p>Carregando...</p> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : <ul className="divide-y">{promotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul>}
       </div>
     </section>

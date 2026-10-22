@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Piloto 05 — SempreGanhe Finger Swipe</title>
+  <desc id="desc">Dedo estilizado deslizando sobre uma raspadinha digital ao lado do nome SempreGanhe.</desc>
+  <rect width="720" height="220" rx="36" fill="#F8F7FC"/>
+  <g transform="translate(47 32)">
+    <rect x="8" y="38" width="128" height="100" rx="24" fill="#6D28D9"/>
+    <text x="72" y="100" text-anchor="middle" fill="#FFC857" font-family="Nunito Sans,Arial,sans-serif" font-size="28" font-weight="800">PRÊMIO</text>
+    <path d="M18 127 125 50" stroke="#B9B2C4" stroke-width="18" stroke-linecap="round"/>
+    <path d="M21 124 124 51" stroke="#E9E5ED" stroke-width="5" stroke-linecap="round" stroke-dasharray="3 9"/>
+    <path d="M112 18c16 10 25 26 26 45" fill="none" stroke="#22D3EE" stroke-width="7" stroke-linecap="round"/>
+    <path d="M121 9c21 13 33 33 35 56" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+    <path d="M96 11c-5 2-8 7-8 13v50l-13-14c-6-6-15-7-21-2-6 5-6 14-1 20l29 37c7 9 17 14 28 14h14c15 0 27-12 27-27V67c0-7-5-13-12-13s-12 6-12 13V34c0-7-5-13-12-13-7 0-12 6-12 13V24c0-8-7-14-15-13z" fill="#FFC857" stroke="#8A5A00" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <text x="220" y="106" fill="#17131F" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Sempre<tspan fill="#6D28D9">Ganhe</tspan></text>
+  <text x="224" y="144" fill="#8A5A00" font-family="Nunito Sans,Arial,sans-serif" font-size="17" font-weight="800" letter-spacing="3">TOQUE. RASPE. DESCUBRA.</text>
+</svg>

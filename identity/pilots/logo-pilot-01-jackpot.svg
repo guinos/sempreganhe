@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Piloto 01 — SempreGanhe Jackpot</title>
+  <desc id="desc">Estrela dourada de prêmio ao lado do nome SempreGanhe.</desc>
+  <rect width="720" height="220" rx="36" fill="#140B2E"/>
+  <g transform="translate(45 35)">
+    <path d="m70 0 18 49 52-5-39 35 25 46-56-27-47 27 17-50-40-31 52 4z" fill="#FFC857"/>
+    <circle cx="70" cy="70" r="23" fill="#6D28D9"/>
+    <path d="m70 55 5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z" fill="#FFC857"/>
+  </g>
+  <text x="205" y="105" fill="#fff" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Sempre</text>
+  <text x="425" y="105" fill="#FFC857" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Ganhe</text>
+  <text x="208" y="143" fill="#22D3EE" font-family="Nunito Sans,Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">RASPE • DESCUBRA • GANHE</text>
+</svg>

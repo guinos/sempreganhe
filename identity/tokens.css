@@ -1,0 +1,29 @@
+:root {
+  --sg-brand-midnight: #140b2e;
+  --sg-brand-purple: #6d28d9;
+  --sg-brand-gold: #ffc857;
+  --sg-brand-gold-text: #8a5a00;
+  --sg-brand-cyan: #22d3ee;
+  --sg-brand-pink: #f43f5e;
+  --sg-brand-orange: #ff8a00;
+  --sg-brand-blue: #119bd7;
+  --sg-brand-violet: #8b35e8;
+
+  --sg-neutral-0: #ffffff;
+  --sg-neutral-100: #f8f7fc;
+  --sg-neutral-300: #d8d3e5;
+  --sg-neutral-700: #514a61;
+  --sg-neutral-950: #17131f;
+
+  --sg-success: #15803d;
+  --sg-warning: #a16207;
+  --sg-error: #b91c1c;
+  --sg-info: #0e7490;
+
+  --sg-radius-card: 24px;
+  --sg-radius-control: 14px;
+  --sg-motion-fast: 180ms;
+  --sg-motion-standard: 240ms;
+  --sg-motion-reveal: 650ms;
+  --sg-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

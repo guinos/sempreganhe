@@ -6,9 +6,9 @@ type Context = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: Context) {
   try {
-    const { restaurantId } = await requireAdminSession();
+    const { partnerId } = await requireAdminSession();
     const input = participationActionSchema.parse(await request.json());
-    const participation = await updateParticipationStatus(restaurantId, (await context.params).id, input.action);
+    const participation = await updateParticipationStatus(partnerId, (await context.params).id, input.action);
     return NextResponse.json({ participation });
   } catch (error) {
     if (error instanceof Error && error.name === "AdminSessionError") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

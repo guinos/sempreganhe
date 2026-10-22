@@ -54,13 +54,13 @@ export class PromotionNotFoundError extends Error {
   }
 }
 
-export function listPromotions(restaurantId: string): Promise<Promotion[]> {
-  return getDb().select().from(promotions).where(eq(promotions.restaurantId, restaurantId)).orderBy(desc(promotions.createdAt));
+export function listPromotions(partnerId: string): Promise<Promotion[]> {
+  return getDb().select().from(promotions).where(eq(promotions.partnerId, partnerId)).orderBy(desc(promotions.createdAt));
 }
 
-export async function createPromotion(restaurantId: string, input: PromotionCreateInput): Promise<Promotion> {
+export async function createPromotion(partnerId: string, input: PromotionCreateInput): Promise<Promotion> {
   try {
-    const [promotion] = await getDb().insert(promotions).values({ ...input, restaurantId }).returning();
+    const [promotion] = await getDb().insert(promotions).values({ ...input, partnerId }).returning();
     return promotion;
   } catch (error) {
     if (isPublicCodeConflict(error)) throw new PromotionConflictError();
@@ -68,12 +68,12 @@ export async function createPromotion(restaurantId: string, input: PromotionCrea
   }
 }
 
-export async function updatePromotion(restaurantId: string, id: string, input: PromotionUpdateInput): Promise<Promotion> {
+export async function updatePromotion(partnerId: string, id: string, input: PromotionUpdateInput): Promise<Promotion> {
   try {
     const [promotion] = await getDb()
       .update(promotions)
       .set({ ...input, updatedAt: new Date() })
-      .where(and(eq(promotions.id, id), eq(promotions.restaurantId, restaurantId)))
+      .where(and(eq(promotions.id, id), eq(promotions.partnerId, partnerId)))
       .returning();
     if (!promotion) throw new PromotionNotFoundError();
     return promotion;
@@ -84,10 +84,10 @@ export async function updatePromotion(restaurantId: string, id: string, input: P
   }
 }
 
-export async function deletePromotion(restaurantId: string, id: string): Promise<Promotion> {
+export async function deletePromotion(partnerId: string, id: string): Promise<Promotion> {
   const [promotion] = await getDb()
     .delete(promotions)
-    .where(and(eq(promotions.id, id), eq(promotions.restaurantId, restaurantId)))
+    .where(and(eq(promotions.id, id), eq(promotions.partnerId, partnerId)))
     .returning();
   if (!promotion) throw new PromotionNotFoundError();
   return promotion;

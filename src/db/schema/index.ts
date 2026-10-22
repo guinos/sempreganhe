@@ -23,24 +23,24 @@ const timestamps = {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 };
 
-export const restaurants = pgTable(
-  "restaurants",
+export const partners = pgTable(
+  "partners",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     slug: varchar("slug", { length: 120 }).notNull(),
     ...timestamps,
   },
-  (table) => [uniqueIndex("restaurants_slug_unique").on(table.slug)],
+  (table) => [uniqueIndex("partners_slug_unique").on(table.slug)],
 );
 
 export const users = pgTable(
   "users",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    restaurantId: uuid("restaurant_id")
+    partnerId: uuid("partner_id")
       .notNull()
-      .references(() => restaurants.id),
+      .references(() => partners.id),
     name: text("name").notNull(),
     email: varchar("email", { length: 320 }).notNull(),
     passwordHash: text("password_hash").notNull(),
@@ -49,7 +49,7 @@ export const users = pgTable(
   },
   (table) => [
     uniqueIndex("users_email_unique").on(table.email),
-    index("users_restaurant_id_idx").on(table.restaurantId),
+    index("users_partner_id_idx").on(table.partnerId),
     check("users_email_lowercase_check", sql`${table.email} = lower(${table.email})`),
   ],
 );
@@ -58,9 +58,9 @@ export const promotions = pgTable(
   "promotions",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    restaurantId: uuid("restaurant_id")
+    partnerId: uuid("partner_id")
       .notNull()
-      .references(() => restaurants.id),
+      .references(() => partners.id),
     title: text("title").notNull(),
     prizeDescription: text("prize_description").notNull(),
     publicCode: varchar("public_code", { length: 128 }).notNull(),
@@ -71,8 +71,8 @@ export const promotions = pgTable(
   },
   (table) => [
     uniqueIndex("promotions_public_code_unique").on(table.publicCode),
-    unique("promotions_id_restaurant_unique").on(table.id, table.restaurantId),
-    index("promotions_restaurant_id_idx").on(table.restaurantId),
+    unique("promotions_id_partner_unique").on(table.id, table.partnerId),
+    index("promotions_partner_id_idx").on(table.partnerId),
     index("promotions_status_idx").on(table.status),
     index("promotions_period_idx").on(table.startsAt, table.endsAt),
     check("promotions_valid_period_check", sql`${table.endsAt} > ${table.startsAt}`),
@@ -83,17 +83,17 @@ export const customers = pgTable(
   "customers",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    restaurantId: uuid("restaurant_id")
+    partnerId: uuid("partner_id")
       .notNull()
-      .references(() => restaurants.id),
+      .references(() => partners.id),
     name: text("name").notNull(),
     phone: text("phone").notNull(),
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("customers_restaurant_phone_unique").on(table.restaurantId, table.phone),
-    unique("customers_id_restaurant_unique").on(table.id, table.restaurantId),
-    index("customers_restaurant_id_idx").on(table.restaurantId),
+    uniqueIndex("customers_partner_phone_unique").on(table.partnerId, table.phone),
+    unique("customers_id_partner_unique").on(table.id, table.partnerId),
+    index("customers_partner_id_idx").on(table.partnerId),
   ],
 );
 
@@ -101,9 +101,9 @@ export const participations = pgTable(
   "participations",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    restaurantId: uuid("restaurant_id")
+    partnerId: uuid("partner_id")
       .notNull()
-      .references(() => restaurants.id),
+      .references(() => partners.id),
     promotionId: uuid("promotion_id").notNull(),
     customerId: uuid("customer_id"),
     publicToken: varchar("public_token", { length: 128 }).notNull(),
@@ -116,18 +116,18 @@ export const participations = pgTable(
   },
   (table) => [
     uniqueIndex("participations_public_token_unique").on(table.publicToken),
-    index("participations_restaurant_id_idx").on(table.restaurantId),
+    index("participations_partner_id_idx").on(table.partnerId),
     index("participations_promotion_id_idx").on(table.promotionId),
     index("participations_customer_id_idx").on(table.customerId),
     foreignKey({
-      name: "participations_promotion_restaurant_fk",
-      columns: [table.promotionId, table.restaurantId],
-      foreignColumns: [promotions.id, promotions.restaurantId],
+      name: "participations_promotion_partner_fk",
+      columns: [table.promotionId, table.partnerId],
+      foreignColumns: [promotions.id, promotions.partnerId],
     }),
     foreignKey({
-      name: "participations_customer_restaurant_fk",
-      columns: [table.customerId, table.restaurantId],
-      foreignColumns: [customers.id, customers.restaurantId],
+      name: "participations_customer_partner_fk",
+      columns: [table.customerId, table.partnerId],
+      foreignColumns: [customers.id, customers.partnerId],
     }),
     check(
       "participations_status_fields_check",
@@ -146,7 +146,7 @@ export const participations = pgTable(
   ],
 );
 
-export const restaurantRelations = relations(restaurants, ({ many }) => ({
+export const partnerRelations = relations(partners, ({ many }) => ({
   users: many(users),
   promotions: many(promotions),
   customers: many(customers),
@@ -154,27 +154,27 @@ export const restaurantRelations = relations(restaurants, ({ many }) => ({
 }));
 
 export const userRelations = relations(users, ({ one }) => ({
-  restaurant: one(restaurants, { fields: [users.restaurantId], references: [restaurants.id] }),
+  partner: one(partners, { fields: [users.partnerId], references: [partners.id] }),
 }));
 
 export const promotionRelations = relations(promotions, ({ one, many }) => ({
-  restaurant: one(restaurants, { fields: [promotions.restaurantId], references: [restaurants.id] }),
+  partner: one(partners, { fields: [promotions.partnerId], references: [partners.id] }),
   participations: many(participations),
 }));
 
 export const customerRelations = relations(customers, ({ one, many }) => ({
-  restaurant: one(restaurants, { fields: [customers.restaurantId], references: [restaurants.id] }),
+  partner: one(partners, { fields: [customers.partnerId], references: [partners.id] }),
   participations: many(participations),
 }));
 
 export const participationRelations = relations(participations, ({ one }) => ({
-  restaurant: one(restaurants, { fields: [participations.restaurantId], references: [restaurants.id] }),
+  partner: one(partners, { fields: [participations.partnerId], references: [partners.id] }),
   promotion: one(promotions, { fields: [participations.promotionId], references: [promotions.id] }),
   customer: one(customers, { fields: [participations.customerId], references: [customers.id] }),
 }));
 
-export type Restaurant = InferSelectModel<typeof restaurants>;
-export type NewRestaurant = InferInsertModel<typeof restaurants>;
+export type Partner = InferSelectModel<typeof partners>;
+export type NewPartner = InferInsertModel<typeof partners>;
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 export type Promotion = InferSelectModel<typeof promotions>;

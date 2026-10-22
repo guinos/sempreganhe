@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">SempreGanhe — piloto principal revisado</title>
+  <desc id="desc">Raspadinha parcialmente revelada sendo raspada por um dedo, ao lado do nome SempreGanhe.</desc>
+  <rect width="720" height="220" rx="36" fill="#140B2E"/>
+  <g transform="translate(40 36)">
+    <rect x="6" y="22" width="145" height="126" rx="24" fill="#6D28D9"/>
+    <rect x="21" y="39" width="115" height="91" rx="16" fill="#FFC857"/>
+    <text x="78" y="96" text-anchor="middle" fill="#140B2E" font-family="Nunito Sans,Arial,sans-serif" font-size="27" font-weight="900">GANHE!</text>
+    <path d="M5 41 145 13M-1 72 151 41M1 106 148 74M20 145 143 109" stroke="#8F88A1" stroke-width="25" stroke-linecap="round"/>
+    <path d="M6 40 144 13M0 72 150 41M2 106 147 74M21 145 142 109" stroke="#DCD7E4" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 10"/>
+    <path d="M104 9c18 10 29 28 31 48" fill="none" stroke="#22D3EE" stroke-width="6" stroke-linecap="round"/>
+    <path d="M113 2c23 13 37 35 40 60" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+    <path d="M91 6c-6 2-9 8-9 15v46L69 53c-6-6-15-7-21-2-6 5-6 14-1 20l29 37c7 9 17 14 28 14h12c15 0 27-12 27-27V59c0-7-5-13-12-13s-12 6-12 13V28c0-7-5-13-12-13s-12 6-12 13V19c0-8-7-14-15-13z" fill="#FFC857" stroke="#8A5A00" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <text x="220" y="106" fill="#fff" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Sempre<tspan fill="#FFC857">Ganhe</tspan></text>
+  <text x="224" y="144" fill="#22D3EE" font-family="Nunito Sans,Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">PROMOÇÃO QUE VIRA JOGO</text>
+</svg>

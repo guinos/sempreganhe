@@ -49,4 +49,4 @@
 
 ## Próximo passo
 
-Implementar a primeira tarefa do MVP: modelo de dados e regras de domínio de restaurantes, usuários, promoções e participações.
+Implementar a primeira tarefa do MVP: modelo de dados e regras de domínio de partners, usuários, promoções e participações.

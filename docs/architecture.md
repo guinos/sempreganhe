@@ -19,7 +19,7 @@ O projeto está na fundação inicial: Next.js App Router, TypeScript estrito, T
 - PostgreSQL com Drizzle ORM e driver `pg`;
 - pnpm como package manager;
 - área pública sem login e painel administrativo autenticado;
-- isolamento multi-restaurante por `restaurantId` no servidor;
+- isolamento multi-tenant por `partnerId` no servidor;
 - QR Code fixo por promoção;
 - WhatsApp e validação automática de compra fora do MVP.
 

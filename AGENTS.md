@@ -16,5 +16,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Use pnpm; não use npm ou yarn neste projeto.
 - Não exponha valores de `.env.local`, tokens, cookies, senhas ou telefones de clientes em logs, commits ou respostas.
 - Execute `pnpm check` antes de considerar uma alteração pronta.
-- Acesso a dados deve permanecer no servidor e sempre respeitar o `restaurantId` da sessão administrativa.
+- Acesso a dados deve permanecer no servidor e sempre respeitar o `partnerId` da sessão administrativa.
 - A especificação e o plano aprovados ficam em `docs/superpowers/`.

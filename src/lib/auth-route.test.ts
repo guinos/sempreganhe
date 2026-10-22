@@ -41,7 +41,7 @@ describe("admin authentication routes", () => {
     db.select.mockReturnValue({
       from: () => ({
         where: () => ({
-          limit: vi.fn().mockResolvedValue([{ id: "user-1", restaurantId: "restaurant-1", passwordHash: "hash", role: "admin" }]),
+          limit: vi.fn().mockResolvedValue([{ id: "user-1", partnerId: "partner-1", passwordHash: "hash", role: "admin" }]),
         }),
       }),
     });
@@ -92,7 +92,7 @@ describe("admin authentication routes", () => {
     db.select.mockReturnValue({
       from: () => ({
         where: () => ({
-          limit: vi.fn().mockResolvedValue([{ id: "user-1", restaurantId: "restaurant-1", passwordHash: "hash", role }]),
+          limit: vi.fn().mockResolvedValue([{ id: "user-1", partnerId: "partner-1", passwordHash: "hash", role }]),
         }),
       }),
     });
@@ -121,14 +121,14 @@ describe("admin area protection", () => {
     await expect(AdminLayout({ children: "content" })).rejects.toThrow("REDIRECT:/login");
   });
 
-  it("renders the restaurant from the session", async () => {
-    requireAdminSession.mockResolvedValue({ userId: "user-1", restaurantId: "restaurant-1" });
+  it("renders the partner from the session", async () => {
+    requireAdminSession.mockResolvedValue({ userId: "user-1", partnerId: "partner-1" });
 
     const layout = await AdminLayout({ children: "content" });
     const page = await AdminPage();
 
     expect(layout).toBeTruthy();
     expect(page).toBeTruthy();
-    expect(JSON.stringify(page)).toContain("restaurant-1");
+    expect(JSON.stringify(page)).toContain("partner-1");
   });
 });

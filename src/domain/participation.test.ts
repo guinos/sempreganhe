@@ -8,7 +8,7 @@ const completedAt = new Date("2026-10-19T12:00:00.000Z");
 function participation(status: Participation["status"] = "pending_registration"): Participation {
   return {
     id: "participation-id",
-    restaurantId: "restaurant-id",
+    partnerId: "partner-id",
     promotionId: "promotion-id",
     customerId: status === "pending_confirmation" || status === "redeemed" ? "old-customer-id" : null,
     publicToken: "public-token",
@@ -51,7 +51,7 @@ describe("completeParticipation", () => {
 
     expect(result).toMatchObject({
       id: original.id,
-      restaurantId: original.restaurantId,
+      partnerId: original.partnerId,
       promotionId: original.promotionId,
       publicToken: original.publicToken,
       prizeDescription: original.prizeDescription,

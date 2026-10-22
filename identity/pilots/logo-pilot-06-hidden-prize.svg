@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">Piloto 06 — SempreGanhe Hidden Prize</title>
+  <desc id="desc">Uma camada raspada revela a palavra Ganhe e um marcador de toque.</desc>
+  <rect width="720" height="220" rx="36" fill="#140B2E"/>
+  <g transform="translate(47 44)">
+    <rect width="138" height="132" rx="25" fill="#FFC857"/>
+    <text x="69" y="84" text-anchor="middle" fill="#140B2E" font-family="Nunito Sans,Arial,sans-serif" font-size="30" font-weight="900">GANHE!</text>
+    <path d="M-8 31 98 -5M-10 64 135 15M-6 100 145 46M14 134 145 87" stroke="#6D28D9" stroke-width="31" stroke-linecap="round"/>
+    <path d="M7 29 94 -2M-5 65 135 16M-3 101 144 47M16 134 144 87" stroke="#9187A5" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 11"/>
+    <circle cx="104" cy="116" r="20" fill="#22D3EE" stroke="#140B2E" stroke-width="5"/>
+    <path d="M98 116h12M104 110v12" stroke="#140B2E" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="225" y="106" fill="#fff" font-family="Nunito Sans,Arial,sans-serif" font-size="54" font-weight="800">Sempre<tspan fill="#FFC857">Ganhe</tspan></text>
+  <text x="229" y="144" fill="#22D3EE" font-family="Nunito Sans,Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="3">O PRÊMIO ESTÁ ESCONDIDO</text>
+</svg>

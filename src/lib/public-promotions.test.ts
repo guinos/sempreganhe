@@ -9,7 +9,7 @@ vi.mock("@/domain/promotion", () => ({ isPromotionAvailable: available }));
 import { findPublicPromotion, scratchPromotion, redeemParticipation, PublicPromotionNotFoundError } from "./public-promotions";
 
 const promotion = {
-  id: "promotion-1", restaurantId: "restaurant-1", title: "Quarta do chopp", prizeDescription: "Ganhe um chopp",
+  id: "promotion-1", partnerId: "partner-1", title: "Quarta do chopp", prizeDescription: "Ganhe um chopp",
   publicCode: "QUARTA", status: "active" as const, startsAt: new Date("2026-10-19T00:00:00Z"), endsAt: new Date("2026-10-20T00:00:00Z"),
   createdAt: new Date(), updatedAt: new Date(),
 };
@@ -35,16 +35,16 @@ describe("public promotion flow", () => {
 
     await expect(scratchPromotion(promotion)).resolves.toEqual(created);
     expect(insert.values).toHaveBeenCalledWith(expect.objectContaining({
-      restaurantId: promotion.restaurantId,
+      partnerId: promotion.partnerId,
       promotionId: promotion.id,
       prizeDescription: promotion.prizeDescription,
       status: "pending_registration",
     }));
   });
 
-  it("reuses the customer within the same restaurant when redeeming", async () => {
-    const customer = { id: "customer-1", restaurantId: "restaurant-1", name: "Ana", phone: "11999999999", createdAt: new Date(), updatedAt: new Date() };
-    const participation = { id: "participation-1", restaurantId: "restaurant-1", promotionId: "promotion-1", customerId: null, publicToken: "token-1", prizeDescription: "Ganhe um chopp", privacyAcceptedAt: null, scrapedAt: new Date(), registeredAt: null, status: "pending_registration" as const, createdAt: new Date(), updatedAt: new Date() };
+  it("reuses the customer within the same partner when redeeming", async () => {
+    const customer = { id: "customer-1", partnerId: "partner-1", name: "Ana", phone: "11999999999", createdAt: new Date(), updatedAt: new Date() };
+    const participation = { id: "participation-1", partnerId: "partner-1", promotionId: "promotion-1", customerId: null, publicToken: "token-1", prizeDescription: "Ganhe um chopp", privacyAcceptedAt: null, scrapedAt: new Date(), registeredAt: null, status: "pending_registration" as const, createdAt: new Date(), updatedAt: new Date() };
     const updated = { ...participation, customerId: customer.id, status: "pending_confirmation" as const, registeredAt: new Date(), privacyAcceptedAt: new Date() };
     const tx = {
       select: vi.fn().mockReturnValueOnce(query([participation])).mockReturnValueOnce(query([customer])),

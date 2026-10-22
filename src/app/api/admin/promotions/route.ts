@@ -4,8 +4,8 @@ import { createPromotion, listPromotions, PromotionConflictError, promotionCreat
 
 export async function GET() {
   try {
-    const { restaurantId } = await requireAdminSession();
-    return NextResponse.json({ promotions: await listPromotions(restaurantId) });
+    const { partnerId } = await requireAdminSession();
+    return NextResponse.json({ promotions: await listPromotions(partnerId) });
   } catch (error) {
     return handleError(error);
   }
@@ -13,9 +13,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { restaurantId } = await requireAdminSession();
+    const { partnerId } = await requireAdminSession();
     const input = promotionCreateSchema.parse(await request.json());
-    return NextResponse.json({ promotion: await createPromotion(restaurantId, input) }, { status: 201 });
+    return NextResponse.json({ promotion: await createPromotion(partnerId, input) }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

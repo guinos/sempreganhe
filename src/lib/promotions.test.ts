@@ -14,10 +14,10 @@ import {
   updatePromotion,
 } from "./promotions";
 
-const restaurantId = "restaurant-1";
+const partnerId = "partner-1";
 const promotion = {
   id: "promotion-1",
-  restaurantId,
+  partnerId,
   title: "Suco em dobro",
   prizeDescription: "Ganhe suco em dobro na compra de um",
   publicCode: "SEGUNDA-SUCO",
@@ -45,20 +45,20 @@ beforeEach(() => {
 });
 
 describe("promotion service", () => {
-  it("lists only promotions belonging to the restaurant", async () => {
+  it("lists only promotions belonging to the partner", async () => {
     const query = chain([promotion]);
     db.select = vi.fn().mockReturnValue(query);
 
-    await expect(listPromotions(restaurantId)).resolves.toEqual([promotion]);
+    await expect(listPromotions(partnerId)).resolves.toEqual([promotion]);
     expect(query.where).toHaveBeenCalledOnce();
   });
 
-  it("creates a promotion with the session restaurant", async () => {
+  it("creates a promotion with the session partner", async () => {
     const query = chain([promotion]);
     db.insert = vi.fn().mockReturnValue(query);
 
     await expect(
-      createPromotion(restaurantId, {
+      createPromotion(partnerId, {
         title: promotion.title,
         prizeDescription: promotion.prizeDescription,
         publicCode: promotion.publicCode,
@@ -76,7 +76,7 @@ describe("promotion service", () => {
     db.insert = vi.fn().mockReturnValue(query);
 
     await expect(
-      createPromotion(restaurantId, {
+      createPromotion(partnerId, {
         title: promotion.title,
         prizeDescription: promotion.prizeDescription,
         publicCode: promotion.publicCode,
@@ -87,19 +87,19 @@ describe("promotion service", () => {
     ).rejects.toBeInstanceOf(PromotionConflictError);
   });
 
-  it("updates a promotion by restaurant and id", async () => {
+  it("updates a promotion by partner and id", async () => {
     const query = chain([promotion]);
     db.update = vi.fn().mockReturnValue(query);
 
-    await expect(updatePromotion(restaurantId, promotion.id, { status: "paused" })).resolves.toEqual(promotion);
+    await expect(updatePromotion(partnerId, promotion.id, { status: "paused" })).resolves.toEqual(promotion);
     expect(db.update).toHaveBeenCalledOnce();
   });
 
-  it("deletes a promotion by restaurant and id", async () => {
+  it("deletes a promotion by partner and id", async () => {
     const query = chain([promotion]);
     db.delete = vi.fn().mockReturnValue(query);
 
-    await expect(deletePromotion(restaurantId, promotion.id)).resolves.toEqual(promotion);
+    await expect(deletePromotion(partnerId, promotion.id)).resolves.toEqual(promotion);
     expect(db.delete).toHaveBeenCalledOnce();
   });
 });

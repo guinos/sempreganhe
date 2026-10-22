@@ -20,7 +20,7 @@ vi.mock("@/lib/promotions", () => ({
 
 import { DELETE, PATCH } from "./route";
 
-const session = { userId: "user-1", restaurantId: "restaurant-1" };
+const session = { userId: "user-1", partnerId: "partner-1" };
 const context = { params: Promise.resolve({ id: "promotion-1" }) };
 
 function request(method: string, body?: unknown) {
@@ -39,21 +39,21 @@ beforeEach(() => {
 });
 
 describe("admin promotion item routes", () => {
-  it("updates a promotion using the session restaurant", async () => {
+  it("updates a promotion using the session partner", async () => {
     const response = await PATCH(request("PATCH", { status: "paused" }), context);
 
     expect(response.status).toBe(200);
-    expect(updatePromotion).toHaveBeenCalledWith(session.restaurantId, "promotion-1", { status: "paused" });
+    expect(updatePromotion).toHaveBeenCalledWith(session.partnerId, "promotion-1", { status: "paused" });
   });
 
-  it("deletes a promotion using the session restaurant", async () => {
+  it("deletes a promotion using the session partner", async () => {
     const response = await DELETE(request("DELETE"), context);
 
     expect(response.status).toBe(200);
-    expect(deletePromotion).toHaveBeenCalledWith(session.restaurantId, "promotion-1");
+    expect(deletePromotion).toHaveBeenCalledWith(session.partnerId, "promotion-1");
   });
 
-  it("returns 404 for a promotion outside the restaurant", async () => {
+  it("returns 404 for a promotion outside the partner", async () => {
     updatePromotion.mockRejectedValue(new PromotionNotFoundError("not found"));
 
     const response = await PATCH(request("PATCH", { status: "paused" }), context);

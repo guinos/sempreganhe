@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "brand-identity": {
+      "source": "rampstackco/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-identity/SKILL.md",
+      "computedHash": "dd53f05b4e24fdc5c4f6f53b80c64a075a815be7f6676b98d38a733e8f69922f"
+    },
     "deploy-to-vercel": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",

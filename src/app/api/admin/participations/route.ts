@@ -4,8 +4,8 @@ import { listParticipations } from "@/lib/participations";
 
 export async function GET() {
   try {
-    const { restaurantId } = await requireAdminSession();
-    return NextResponse.json({ participations: await listParticipations(restaurantId) });
+    const { partnerId } = await requireAdminSession();
+    return NextResponse.json({ participations: await listParticipations(partnerId) });
   } catch (error) {
     if (error instanceof Error && error.name === "AdminSessionError") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

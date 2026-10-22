@@ -43,7 +43,7 @@ export async function findPublicPromotion(publicCode: string, now = new Date()):
 
 export async function scratchPromotion(promotion: Promotion, scrapedAt = new Date()): Promise<Participation> {
   const [participation] = await getDb().insert(participations).values({
-    restaurantId: promotion.restaurantId,
+    partnerId: promotion.partnerId,
     promotionId: promotion.id,
     publicToken: randomUUID(),
     prizeDescription: promotion.prizeDescription,
@@ -67,11 +67,11 @@ export async function redeemParticipation(
     }
 
     const [existingCustomer] = await tx.select().from(customers).where(and(
-      eq(customers.restaurantId, participation.restaurantId),
+      eq(customers.partnerId, participation.partnerId),
       eq(customers.phone, input.phone),
     )).limit(1);
     const customer = existingCustomer ?? (await tx.insert(customers).values({
-      restaurantId: participation.restaurantId,
+      partnerId: participation.partnerId,
       name: input.name,
       phone: input.phone,
     }).returning())[0];

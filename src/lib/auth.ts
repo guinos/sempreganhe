@@ -32,7 +32,7 @@ export class AdminSessionError extends Error {
 
 export type AdminSession = {
   userId: string;
-  restaurantId: string;
+  partnerId: string;
 };
 
 type SessionPayload = AdminSession & { exp: number };
@@ -59,7 +59,7 @@ export async function verifyPassword(password: string, encodedHash: string): Pro
 export function createAdminSessionToken(session: AdminSession, ttlSeconds = SESSION_TTL_SECONDS): string {
   const payload: SessionPayload = {
     userId: session.userId,
-    restaurantId: session.restaurantId,
+    partnerId: session.partnerId,
     exp: Math.floor(Date.now() / 1000) + ttlSeconds,
   };
   const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -92,7 +92,7 @@ export function verifyAdminSessionToken(token: string): AdminSession {
     throw new AdminSessionError();
   }
 
-  return { userId: payload.userId, restaurantId: payload.restaurantId };
+  return { userId: payload.userId, partnerId: payload.partnerId };
 }
 
 export async function requireAdminSession(): Promise<AdminSession> {
@@ -109,13 +109,13 @@ function sign(encodedPayload: string): string {
 function isSessionPayload(value: unknown): value is SessionPayload {
   if (!value || typeof value !== "object") return false;
   const keys = Object.keys(value).sort();
-  if (keys.join(",") !== "exp,restaurantId,userId") return false;
+  if (keys.join(",") !== "exp,partnerId,userId") return false;
   const payload = value as Record<string, unknown>;
   return (
     typeof payload.userId === "string" &&
     payload.userId.length > 0 &&
-    typeof payload.restaurantId === "string" &&
-    payload.restaurantId.length > 0 &&
+    typeof payload.partnerId === "string" &&
+    payload.partnerId.length > 0 &&
     typeof payload.exp === "number" &&
     Number.isInteger(payload.exp) &&
     Number.isSafeInteger(payload.exp)

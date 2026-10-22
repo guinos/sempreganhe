@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Participation = {
   id: string;
@@ -17,6 +17,8 @@ export default function ParticipationsPanel() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | Participation["status"]>("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -57,13 +59,35 @@ export default function ParticipationsPanel() {
     return "Resgatado";
   }
 
+  const filteredItems = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+    return items.filter((item) => {
+      const matchesStatus = statusFilter === "all" || item.status === statusFilter;
+      const searchableText = [item.promotionTitle, item.prizeDescription, item.customerName ?? "", item.customerPhone ?? ""].join(" ").toLocaleLowerCase();
+      return matchesStatus && (!normalizedSearch || searchableText.includes(normalizedSearch));
+    });
+  }, [items, search, statusFilter]);
+
+  const pendingConfirmationCount = items.filter((item) => item.status === "pending_confirmation").length;
+
   return (
     <section className="rounded-xl border p-6">
       <div className="mb-4"><h2 className="text-xl font-semibold">Participações e resgates</h2><p className="text-sm text-gray-500">Acompanhe quem raspou e quem concluiu o cadastro.</p></div>
-      {loading && <p>Carregando...</p>}
-      {error && <p aria-live="polite" className="text-sm text-red-600">{error}</p>}
+      {loading ? <p>Carregando...</p> : null}
+      {error ? <p aria-live="polite" className="text-sm text-red-600">{error}</p> : null}
       {!loading && !error && items.length === 0 && <p className="text-gray-500">Nenhuma participação ainda.</p>}
-      {!loading && !error && items.length > 0 && <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b"><th className="py-2 pr-4">Promoção</th><th className="py-2 pr-4">Prêmio</th><th className="py-2 pr-4">Cliente</th><th className="py-2 pr-4">Status</th><th className="py-2">Ação</th></tr></thead><tbody>{items.map((item) => <tr className="border-b last:border-0" key={item.id}><td className="py-3 pr-4">{item.promotionTitle}</td><td className="py-3 pr-4">{item.prizeDescription}</td><td className="py-3 pr-4">{item.customerName ? <>{item.customerName}<br /><span className="text-xs text-gray-500">{item.customerPhone}</span></> : <span className="text-gray-500">Aguardando cadastro</span>}</td><td className="py-3 pr-4">{statusLabel(item.status)}</td><td className="py-3">{item.status === "pending_confirmation" && <div className="flex gap-2"><button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "confirm")} type="button">Confirmar</button><button className="rounded border px-3 py-1 disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "reject")} type="button">Recusar</button></div>}</td></tr>)}</tbody></table></div>}
+      {!loading && !error && items.length > 0 && <>
+        <div className="mb-4 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg bg-gray-50 p-3"><p className="text-xs text-gray-500">Total</p><p className="text-2xl font-semibold">{items.length}</p></div>
+          <div className="rounded-lg bg-amber-50 p-3"><p className="text-xs text-gray-600">Aguardando confirmação</p><p className="text-2xl font-semibold">{pendingConfirmationCount}</p></div>
+          <div className="rounded-lg bg-green-50 p-3"><p className="text-xs text-gray-600">Resgatados</p><p className="text-2xl font-semibold">{items.filter((item) => item.status === "redeemed").length}</p></div>
+        </div>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+          <label className="flex flex-1 flex-col gap-1 text-sm">Buscar<input className="rounded border p-2" placeholder="Cliente, telefone, promoção ou prêmio" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+          <label className="flex flex-col gap-1 text-sm sm:w-56">Status<select className="rounded border p-2" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "all" | Participation["status"])}><option value="all">Todos</option><option value="pending_registration">Pendente de cadastro</option><option value="pending_confirmation">Aguardando confirmação</option><option value="redeemed">Resgatado</option><option value="rejected">Recusado</option></select></label>
+        </div>
+        {filteredItems.length === 0 ? <p className="text-gray-500">Nenhuma participação corresponde aos filtros.</p> : <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b"><th className="py-2 pr-4">Promoção</th><th className="py-2 pr-4">Prêmio</th><th className="py-2 pr-4">Cliente</th><th className="py-2 pr-4">Data</th><th className="py-2 pr-4">Status</th><th className="py-2">Ação</th></tr></thead><tbody>{filteredItems.map((item) => <tr className="border-b last:border-0" key={item.id}><td className="py-3 pr-4">{item.promotionTitle}</td><td className="py-3 pr-4">{item.prizeDescription}</td><td className="py-3 pr-4">{item.customerName ? <>{item.customerName}<br /><span className="text-xs text-gray-500">{item.customerPhone}</span></> : <span className="text-gray-500">Aguardando cadastro</span>}</td><td className="whitespace-nowrap py-3 pr-4 text-xs text-gray-500">{new Date(item.scrapedAt).toLocaleString("pt-BR")}</td><td className="py-3 pr-4">{statusLabel(item.status)}</td><td className="py-3">{item.status === "pending_confirmation" && <div className="flex gap-2"><button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "confirm")} type="button">Confirmar</button><button className="rounded border px-3 py-1 disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "reject")} type="button">Recusar</button></div>}</td></tr>)}</tbody></table></div>}
+      </>}
     </section>
   );
 }

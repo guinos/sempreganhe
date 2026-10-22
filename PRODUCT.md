@@ -2,12 +2,12 @@
 
 ## Problema
 
-Restaurantes têm dificuldade para estimular recorrência de clientes em compras presenciais e delivery.
+Partners têm dificuldade para estimular recorrência de clientes em compras presenciais e delivery.
 
 ## Público
 
-- Clientes finais de restaurantes presenciais e delivery.
-- Restaurantes que desejam criar promoções simples de fidelização.
+- Clientes finais de partners presenciais e delivery.
+- Partners que desejam criar promoções simples de fidelização.
 
 ## Objetivo
 
@@ -16,7 +16,7 @@ Permitir que o cliente acesse uma promoção por QR Code ou link, raspe uma rasp
 ## MVP
 
 - SaaS web responsivo;
-- um restaurante piloto, com dados isolados para expansão futura;
+- um partner piloto, com dados isolados para expansão futura;
 - login administrativo por e-mail e senha;
 - promoção com um prêmio fixo, descrição, status e período de validade;
 - QR Code e link público por promoção;
@@ -31,7 +31,7 @@ Permitir que o cliente acesse uma promoção por QR Code ou link, raspe uma rasp
 2. Sistema gera o link e QR Code da promoção.
 3. Cliente acessa, raspa e vê o prêmio.
 4. Cliente informa os dados para concluir o resgate.
-5. Restaurante acompanha o resgate no painel.
+5. Partner acompanha o resgate no painel.
 
 ## Requisitos e restrições
 
@@ -39,7 +39,7 @@ Permitir que o cliente acesse uma promoção por QR Code ou link, raspe uma rasp
 - O mesmo link pode ser usado por vários clientes e em compras recorrentes.
 - Promoção inativa ou fora da validade não inicia nova participação.
 - Cliente não cria conta nem senha.
-- Dados de restaurantes devem ser isolados no servidor.
+- Dados de partners devem ser isolados no servidor.
 - PostgreSQL é a persistência planejada; Drizzle é o ORM adotado pelo bootstrap.
 
 ## Critérios de aceitação
@@ -49,7 +49,7 @@ Permitir que o cliente acesse uma promoção por QR Code ou link, raspe uma rasp
 - Cliente raspa e vê o prêmio.
 - Cadastro concluído aparece como resgate no painel.
 - Promoção inválida bloqueia nova participação.
-- Usuário de um restaurante não acessa dados de outro.
+- Usuário de um partner não acessa dados de outro.
 
 ## Assumptions reversíveis
 

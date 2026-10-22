@@ -1,6 +1,6 @@
 # SempreGanhe
 
-SaaS web de promoções com raspadinha digital para fidelização de clientes de restaurantes.
+SaaS web de promoções com raspadinha digital para fidelização de clientes de partners.
 
 ## Estado atual
 

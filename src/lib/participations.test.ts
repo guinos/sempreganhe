@@ -10,7 +10,7 @@ import { listParticipations } from "./participations";
 describe("participation service", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("filters participation queries by the session restaurant", async () => {
+  it("filters participation queries by the session partner", async () => {
     const query = {
       from: vi.fn().mockReturnThis(),
       innerJoin: vi.fn().mockReturnThis(),
@@ -20,7 +20,7 @@ describe("participation service", () => {
     };
     db.select = vi.fn().mockReturnValue(query);
 
-    await expect(listParticipations("restaurant-1")).resolves.toEqual([]);
+    await expect(listParticipations("partner-1")).resolves.toEqual([]);
     expect(query.where).toHaveBeenCalledOnce();
   });
 });
