@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getDb } from "@/db";
-import { customers, participations, promotions, type Participation, type Promotion } from "@/db/schema";
+import { customers, participations, partners, promotions, type Participation, type Promotion } from "@/db/schema";
 import { isPromotionAvailable } from "@/domain/promotion";
 
 export const customerRegistrationSchema = z.object({
@@ -39,6 +39,11 @@ export async function findPublicPromotion(publicCode: string, now = new Date()):
   const [promotion] = await getDb().select().from(promotions).where(eq(promotions.publicCode, publicCode)).limit(1);
   if (!promotion || !isPromotionAvailable(promotion, now)) throw new PublicPromotionNotFoundError();
   return promotion;
+}
+
+export async function findPublicPartnerWhatsappPhone(partnerId: string): Promise<string | null> {
+  const [partner] = await getDb().select({ whatsappPhone: partners.whatsappPhone }).from(partners).where(eq(partners.id, partnerId)).limit(1);
+  return partner?.whatsappPhone ?? null;
 }
 
 export async function scratchPromotion(promotion: Promotion, scrapedAt = new Date()): Promise<Participation> {

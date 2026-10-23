@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { findPublicPromotion, PublicPromotionNotFoundError, scratchPromotion } from "@/lib/public-promotions";
+import { findPublicPartnerWhatsappPhone, findPublicPromotion, PublicPromotionNotFoundError, scratchPromotion } from "@/lib/public-promotions";
 
 type Context = { params: Promise<{ code: string }> };
 
 export async function GET(_request: Request, context: Context) {
   try {
     const promotion = await findPublicPromotion((await context.params).code);
-    return NextResponse.json({ promotion: { title: promotion.title, publicCode: promotion.publicCode } });
+    return NextResponse.json({ promotion: { title: promotion.title, publicCode: promotion.publicCode, whatsappPhone: await findPublicPartnerWhatsappPhone(promotion.partnerId) } });
   } catch (error) {
     return handleError(error);
   }
