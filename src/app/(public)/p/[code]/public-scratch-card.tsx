@@ -66,29 +66,31 @@ export default function PublicScratchCard({ code }: { code: string }) {
     if (!canvas) return;
     const context = canvas.getContext("2d");
     if (!context) return;
+    const scratchCanvas = canvas;
+    const scratchContext = context;
 
     function drawCover() {
-      const rect = canvas.getBoundingClientRect();
+      const rect = scratchCanvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
-      canvas.height = Math.max(1, Math.floor(rect.height * ratio));
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const gradient = context.createLinearGradient(0, 0, rect.width, rect.height);
+      scratchCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      scratchCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
+      scratchContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const gradient = scratchContext.createLinearGradient(0, 0, rect.width, rect.height);
       gradient.addColorStop(0, "#e7c873");
       gradient.addColorStop(0.45, "#c9a24a");
       gradient.addColorStop(1, "#8f671c");
-      context.globalCompositeOperation = "source-over";
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, rect.width, rect.height);
-      context.fillStyle = "rgba(17, 17, 17, 0.2)";
-      context.font = "700 18px Arial";
-      context.textAlign = "center";
-      context.fillText("RASPE AQUI", rect.width / 2, rect.height / 2 + 6);
+      scratchContext.globalCompositeOperation = "source-over";
+      scratchContext.fillStyle = gradient;
+      scratchContext.fillRect(0, 0, rect.width, rect.height);
+      scratchContext.fillStyle = "rgba(17, 17, 17, 0.2)";
+      scratchContext.font = "700 18px Arial";
+      scratchContext.textAlign = "center";
+      scratchContext.fillText("RASPE AQUI", rect.width / 2, rect.height / 2 + 6);
     }
 
     drawCover();
     const observer = new ResizeObserver(drawCover);
-    observer.observe(canvas);
+    observer.observe(scratchCanvas);
     return () => observer.disconnect();
   }, [promotion, scratched]);
 
