@@ -77,17 +77,22 @@ export default function PublicScratchCard({ code }: { code: string }) {
       scratchCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
       scratchCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
       scratchContext.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const gradient = scratchContext.createLinearGradient(0, 0, rect.width, rect.height);
-      gradient.addColorStop(0, "#e7c873");
-      gradient.addColorStop(0.45, "#c9a24a");
-      gradient.addColorStop(1, "#8f671c");
+      scratchContext.clearRect(0, 0, rect.width, rect.height);
       scratchContext.globalCompositeOperation = "source-over";
-      scratchContext.fillStyle = gradient;
-      scratchContext.fillRect(0, 0, rect.width, rect.height);
-      scratchContext.fillStyle = "rgba(17, 17, 17, 0.2)";
-      scratchContext.font = "700 18px Arial";
-      scratchContext.textAlign = "center";
-      scratchContext.fillText("RASPE AQUI", rect.width / 2, rect.height / 2 + 6);
+      const mark = new window.Image();
+      mark.src = "/brand/sempreganhe-official-mark.png";
+      mark.onload = () => {
+        const scale = Math.min(rect.width / mark.naturalWidth, rect.height / mark.naturalHeight);
+        const width = mark.naturalWidth * scale;
+        const height = mark.naturalHeight * scale;
+        const x = (rect.width - width) / 2;
+        const y = (rect.height - height) / 2;
+        scratchContext.drawImage(mark, x, y, width, height);
+        scratchContext.fillStyle = "rgba(17, 17, 17, 0.52)";
+        scratchContext.font = "800 18px Arial";
+        scratchContext.textAlign = "center";
+        scratchContext.fillText("RASPE AQUI", rect.width / 2, rect.height * 0.68);
+      };
     }
 
     drawCover();
@@ -211,7 +216,7 @@ export default function PublicScratchCard({ code }: { code: string }) {
   return <main className={styles.page}>
     <div className={styles.shell}>
       <header className={styles.brandBar}>
-        <Image className={styles.brandLogo} src="/brand/sempreganhe-official-dark.png" alt="SempreGanhe" width={960} height={320} priority />
+        <Image className={styles.brandLogo} src="/brand/sempreganhe-official-transp.png" alt="SempreGanhe" width={720} height={240} priority />
         <span className={styles.secureLabel}>Experiência exclusiva</span>
       </header>
 
@@ -231,7 +236,7 @@ export default function PublicScratchCard({ code }: { code: string }) {
                   <p className={styles.prizeText}>{promotion.prizeDescription ?? "está esperando por você"}</p>
                 </div>
               </div>
-              <canvas aria-label="Raspadinha digital. Deslize o dedo para revelar o prêmio." className={styles.scratchCanvas} onPointerCancel={finishPointer} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointer} ref={canvasRef} />
+              <canvas aria-label="Marca SempreGanhe. Deslize o dedo para raspar e revelar o prêmio." className={styles.scratchCanvas} onPointerCancel={finishPointer} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointer} ref={canvasRef} />
             </div>
           </div>
           <p className={styles.instruction}><span aria-hidden="true" className={styles.instructionIcon}>↗</span>Deslize o dedo para raspar e revelar seu prêmio.</p>

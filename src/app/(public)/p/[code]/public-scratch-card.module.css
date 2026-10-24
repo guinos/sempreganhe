@@ -31,7 +31,7 @@
 }
 
 .brandLogo {
-  width: min(12rem, 48vw);
+  width: min(15rem, 58vw);
   height: auto;
   object-fit: contain;
   object-position: center;
@@ -94,21 +94,15 @@
 
 .scratchFrame {
   position: relative;
-  padding: 0.5rem;
-  border: 1px solid rgba(242, 210, 123, 0.56);
-  border-radius: 1.45rem;
-  background: linear-gradient(145deg, rgba(242, 210, 123, 0.5), rgba(106, 63, 16, 0.65));
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.44), 0 0 3rem rgba(201, 162, 74, 0.12);
+  padding: 0;
+  filter: drop-shadow(0 1.5rem 2.5rem rgba(0, 0, 0, 0.44));
 }
 
 .scratchCard {
   position: relative;
-  aspect-ratio: 1.28;
-  overflow: hidden;
-  border-radius: 1rem;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1), transparent 28%),
-    linear-gradient(145deg, #241c16, #0f0d0b 64%, #3b1820);
+  aspect-ratio: 1.55;
+  overflow: visible;
+  background: radial-gradient(ellipse at center, rgba(201, 162, 74, 0.18), transparent 58%);
 }
 
 .prizeUnderlay {
@@ -117,6 +111,9 @@
   place-items: center;
   padding: 1.5rem;
   text-align: center;
+  -webkit-mask: url("/brand/sempreganhe-official-mark.png") center / contain no-repeat;
+  mask: url("/brand/sempreganhe-official-mark.png") center / contain no-repeat;
+  background: linear-gradient(145deg, #241c16, #0f0d0b 64%, #3b1820);
 }
 
 .prizeUnderlay p { margin: 0; }
@@ -130,6 +127,7 @@
   height: 100%;
   touch-action: none;
   cursor: grab;
+  overflow: visible;
 }
 
 .scratchCanvas:active { cursor: grabbing; }
@@ -228,7 +226,7 @@
   .content { grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1fr); gap: 4rem; padding-top: 4rem; }
   .intro { text-align: left; }
   .title, .description { margin-left: 0; }
-  .brandLogo { width: 14rem; }
+  .brandLogo { width: 17rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
