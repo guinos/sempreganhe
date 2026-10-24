@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 type MenuItem = {
   label: string;
@@ -20,9 +21,9 @@ const menuGroups: Array<{ label: string; items: MenuItem[] }> = [
   {
     label: "Marketing",
     items: [
-      { label: "Criar promoção", href: "#promotion-create" },
-      { label: "Promoções cadastradas", href: "#promotions-list" },
-      { label: "Participação e resgate", href: "#participations" },
+      { label: "Criar promoção", href: "/admin/marketing#promotion-create" },
+      { label: "Promoções cadastradas", href: "/admin/marketing#promotions-list" },
+      { label: "Participação e resgate", href: "/admin/marketing#participations" },
       { label: "Google Avaliações", available: false },
     ],
   },
@@ -36,6 +37,7 @@ const menuGroups: Array<{ label: string; items: MenuItem[] }> = [
 ];
 
 export default function AdminNavigation() {
+  const pathname = usePathname();
   const router = useRouter();
 
   async function logout() {
@@ -53,6 +55,9 @@ export default function AdminNavigation() {
         </div>
 
         <nav aria-label="Menu administrativo" className="flex-1 space-y-3">
+          <Link aria-current={pathname === "/admin" ? "page" : undefined} className={`block rounded-lg px-3 py-3 text-sm font-semibold text-white outline-none transition focus-visible:ring-2 focus-visible:ring-blue-400 ${pathname === "/admin" ? "bg-blue-600 hover:bg-blue-500" : "bg-slate-900/70 hover:bg-slate-800"}`} href="/admin">
+            Home Dashboard
+          </Link>
           {menuGroups.map((group) => (
             <details className="group rounded-lg bg-slate-900/70 p-2" key={group.label} open>
               <summary className="cursor-pointer list-none px-2 py-2 text-sm font-semibold text-slate-200 marker:hidden">
@@ -70,9 +75,9 @@ export default function AdminNavigation() {
                         <span className="text-[10px] uppercase tracking-wide">Em breve</span>
                       </span>
                     ) : (
-                      <a className="block rounded-md px-2 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white" href={item.href}>
+                      <Link className="block rounded-md px-2 py-2 text-sm text-slate-300 outline-none transition hover:bg-slate-800 hover:text-white focus-visible:ring-2 focus-visible:ring-blue-400" href={item.href ?? "#"}>
                         {item.label}
-                      </a>
+                      </Link>
                     )}
                   </li>
                 ))}
