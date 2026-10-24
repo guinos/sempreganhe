@@ -1,0 +1,236 @@
+.page {
+  --gold: #c9a24a;
+  --gold-light: #f2d27b;
+  --red: #a61b2b;
+  --cream: #f4efe5;
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(201, 162, 74, 0.22), transparent 34rem),
+    radial-gradient(circle at 100% 75%, rgba(166, 27, 43, 0.16), transparent 22rem),
+    #050505;
+  color: var(--cream);
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100svh;
+  width: min(100%, 72rem);
+  margin: 0 auto;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 2rem;
+}
+
+.brandBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brandLogo {
+  width: min(12rem, 48vw);
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.secureLabel {
+  color: rgba(244, 239, 229, 0.65);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.content {
+  display: grid;
+  flex: 1;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 3rem 0 1rem;
+}
+
+.intro {
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.7rem;
+  color: var(--gold-light);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.title {
+  max-width: 38rem;
+  margin: 0 auto;
+  color: var(--cream);
+  font-size: clamp(2.1rem, 8vw, 4.4rem);
+  font-weight: 850;
+  letter-spacing: -0.06em;
+  line-height: 0.96;
+}
+
+.description {
+  max-width: 34rem;
+  margin: 1rem auto 0;
+  color: rgba(244, 239, 229, 0.72);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.scratchColumn {
+  display: flex;
+  width: min(100%, 31rem);
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.scratchFrame {
+  position: relative;
+  padding: 0.5rem;
+  border: 1px solid rgba(242, 210, 123, 0.56);
+  border-radius: 1.45rem;
+  background: linear-gradient(145deg, rgba(242, 210, 123, 0.5), rgba(106, 63, 16, 0.65));
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.44), 0 0 3rem rgba(201, 162, 74, 0.12);
+}
+
+.scratchCard {
+  position: relative;
+  aspect-ratio: 1.28;
+  overflow: hidden;
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1), transparent 28%),
+    linear-gradient(145deg, #241c16, #0f0d0b 64%, #3b1820);
+}
+
+.prizeUnderlay {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.prizeUnderlay p { margin: 0; }
+.prizeKicker { color: var(--gold-light); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.prizeText { margin-top: 0.45rem !important; color: var(--cream); font-size: clamp(1.45rem, 5vw, 2.1rem); font-weight: 850; line-height: 1.1; }
+
+.scratchCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.scratchCanvas:active { cursor: grabbing; }
+
+.instruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 1rem 0 0;
+  color: rgba(244, 239, 229, 0.74);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.instructionIcon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border: 1px solid rgba(242, 210, 123, 0.65);
+  border-radius: 50%;
+  color: var(--gold-light);
+  font-size: 0.9rem;
+}
+
+.progressTrack {
+  height: 0.32rem;
+  margin-top: 0.95rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(244, 239, 229, 0.16);
+}
+
+.progressValue {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--red), var(--gold-light));
+  transition: width 180ms ease-out;
+}
+
+.statusCard, .redemptionCard {
+  width: min(100%, 31rem);
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid rgba(242, 210, 123, 0.28);
+  border-radius: 1.25rem;
+  background: rgba(19, 17, 15, 0.92);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.statusCard h2, .redemptionCard h2 { margin: 0; color: var(--cream); font-size: 1.5rem; letter-spacing: -0.03em; }
+.statusCard p, .redemptionCard p { color: rgba(244, 239, 229, 0.72); line-height: 1.5; }
+.statusSuccess { border-color: rgba(201, 162, 74, 0.68); }
+.statusError { border-color: rgba(201, 42, 58, 0.72); }
+
+.button, .whatsappButton {
+  display: inline-flex;
+  min-height: 3.15rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.8rem 1.2rem;
+  background: linear-gradient(135deg, #e7c873, #a87924);
+  color: #17110a;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.button:hover, .whatsappButton:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.button:focus-visible, .whatsappButton:focus-visible, .input:focus-visible { outline: 3px solid var(--gold-light); outline-offset: 3px; }
+.button:disabled { cursor: wait; opacity: 0.62; }
+
+.redemptionCard { text-align: left; }
+.redemptionCard h2, .redemptionCard > p { text-align: center; }
+.form { display: grid; gap: 0.9rem; margin-top: 1.25rem; }
+.field { display: grid; gap: 0.4rem; color: var(--cream); font-size: 0.84rem; font-weight: 700; }
+.input { width: 100%; box-sizing: border-box; border: 1px solid rgba(244, 239, 229, 0.22); border-radius: 0.65rem; background: #090807; color: var(--cream); padding: 0.85rem 0.9rem; font: inherit; }
+.input::placeholder { color: rgba(244, 239, 229, 0.4); }
+
+.error { margin: 1rem 0 0; color: #ff9da5; font-size: 0.88rem; text-align: center; }
+.footer { margin-top: auto; padding-top: 2rem; color: rgba(244, 239, 229, 0.45); font-size: 0.72rem; text-align: center; }
+
+@media (min-width: 760px) {
+  .shell { padding: 1.75rem 2.5rem 2rem; }
+  .content { grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1fr); gap: 4rem; padding-top: 4rem; }
+  .intro { text-align: left; }
+  .title, .description { margin-left: 0; }
+  .brandLogo { width: 14rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button, .whatsappButton, .progressValue { transition: none; }
+}

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent as ReactPointerEvent } from "react";
+import Image from "next/image";
+import styles from "./public-scratch-card.module.css";
 
 type ParticipationStatus = "pending_registration" | "pending_confirmation" | "redeemed" | "rejected";
 type State = {
@@ -206,17 +208,39 @@ export default function PublicScratchCard({ code }: { code: string }) {
   if (error && !promotion) return <main className="mx-auto flex min-h-screen max-w-md items-center p-8"><p>{error}</p></main>;
   if (!promotion) return <main className="mx-auto flex min-h-screen max-w-md items-center justify-center p-8"><p>Carregando sua raspadinha...</p></main>;
 
-  return <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-6 p-6 text-center">
-    <p className="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">SempreGanhe</p>
-    <h1 className="text-3xl font-semibold">{promotion.title}</h1>
-    {!scratched ? <section className="flex flex-col gap-3">
-      <div className="relative aspect-[1.7] overflow-hidden rounded-2xl border-2 border-black bg-white shadow-lg">
-        <div className="flex h-full items-center justify-center p-6"><p className="text-2xl font-bold text-gray-900">Seu prêmio está aqui</p></div>
-        <canvas aria-label="Raspadinha digital. Deslize o dedo para revelar o prêmio." className="absolute inset-0 h-full w-full touch-none cursor-grab active:cursor-grabbing" onPointerCancel={finishPointer} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointer} ref={canvasRef} />
+  return <main className={styles.page}>
+    <div className={styles.shell}>
+      <header className={styles.brandBar}>
+        <Image className={styles.brandLogo} src="/brand/sempreganhe-official-dark.png" alt="SempreGanhe" width={960} height={320} priority />
+        <span className={styles.secureLabel}>Experiência exclusiva</span>
+      </header>
+
+      <div className={styles.content}>
+        <section className={styles.intro} aria-labelledby="promotion-title">
+          <p className={styles.eyebrow}>Uma chance especial para você</p>
+          <h1 className={styles.title} id="promotion-title">{promotion.title}</h1>
+          <p className={styles.description}>Raspe, descubra seu prêmio e aproveite esta promoção exclusiva.</p>
+        </section>
+
+        {!scratched ? <section className={styles.scratchColumn} aria-label="Área da raspadinha">
+          <div className={styles.scratchFrame}>
+            <div className={styles.scratchCard}>
+              <div className={styles.prizeUnderlay}>
+                <div>
+                  <p className={styles.prizeKicker}>Seu prêmio</p>
+                  <p className={styles.prizeText}>{promotion.prizeDescription ?? "está esperando por você"}</p>
+                </div>
+              </div>
+              <canvas aria-label="Raspadinha digital. Deslize o dedo para revelar o prêmio." className={styles.scratchCanvas} onPointerCancel={finishPointer} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointer} ref={canvasRef} />
+            </div>
+          </div>
+          <p className={styles.instruction}><span aria-hidden="true" className={styles.instructionIcon}>↗</span>Deslize o dedo para raspar e revelar seu prêmio.</p>
+          <div aria-label={`${Math.round(scratchProgress * 100)}% raspado`} className={styles.progressTrack} role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={Math.round(scratchProgress * 100)}><div className={styles.progressValue} style={{ width: `${Math.round(scratchProgress * 100)}%` }} /></div>
+        </section> : status === "redeemed" ? <div className={`${styles.statusCard} ${styles.statusSuccess}`} role="status"><h2>Prêmio resgatado!</h2><p>Apresente esta confirmação ao parceiro.</p></div> : status === "rejected" ? <div className={`${styles.statusCard} ${styles.statusError}`} role="status"><h2>Resgate não aprovado</h2><p>O parceiro não confirmou esta participação.</p></div> : rescueRequested ? <div className={`${styles.statusCard} ${styles.statusSuccess}`} role="status"><h2>Resgate solicitado</h2><p>Seu prêmio será enviado para seu WhatsApp.</p><a className={styles.whatsappButton} href={whatsappUrl} rel="noreferrer" target="_blank">Ir para WhatsApp</a></div> : status === "pending_confirmation" ? <div className={styles.statusCard} role="status"><h2>Aguardando confirmação</h2><p>O parceiro precisa confirmar seu pedido para liberar o prêmio.</p></div> : !showRedemptionForm ? <section className={styles.statusCard} aria-labelledby="prize-title"><p className={styles.eyebrow}>Parabéns</p><h2 id="prize-title">Você ganhou {promotion.prizeDescription}</h2><p>Seu prêmio está reservado. Informe seus dados para solicitar o resgate.</p><button className={styles.button} onClick={() => setShowRedemptionForm(true)} type="button">Solicitar resgate</button></section> : <form className={styles.redemptionCard} onSubmit={(event) => void register(event)}><p className={styles.eyebrow}>Último passo</p><h2>Resgate seu prêmio</h2><p>Preencha seus dados para enviar a solicitação ao parceiro.</p><div className={styles.form}><label className={styles.field}>Nome<input aria-label="Nome" className={styles.input} placeholder="Como podemos chamar você?" required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label className={styles.field}>Telefone<input aria-label="Telefone" className={styles.input} inputMode="tel" placeholder="(00) 00000-0000" required value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label><button className={styles.button} disabled={isSubmitting} type="submit">{isSubmitting ? "Enviando..." : "Confirmar resgate"}</button></div></form>}
       </div>
-      <p className="text-sm text-gray-600">Deslize o dedo para raspar e revelar seu prêmio.</p>
-      <div aria-label={`${Math.round(scratchProgress * 100)}% raspado`} className="h-2 overflow-hidden rounded-full bg-gray-200"><div className="h-full rounded-full bg-amber-500 transition-[width]" style={{ width: `${Math.round(scratchProgress * 100)}%` }} /></div>
-    </section> : status === "redeemed" ? <div className="rounded-2xl border border-green-600 bg-green-50 p-6"><h2 className="text-xl font-semibold">Prêmio resgatado!</h2><p className="mt-2">Apresente esta confirmação ao parceiro.</p></div> : status === "rejected" ? <div className="rounded-2xl border border-red-600 bg-red-50 p-6"><h2 className="text-xl font-semibold">Resgate não aprovado</h2><p className="mt-2">O parceiro não confirmou esta participação.</p></div> : rescueRequested ? <div className="rounded-2xl border border-green-600 bg-green-50 p-6"><h2 className="text-xl font-semibold">Resgate solicitado</h2><p className="mt-2">Seu prêmio será enviado para seu WhatsApp.</p><a className="mt-5 inline-flex justify-center rounded-xl bg-green-600 px-5 py-3 font-semibold text-white" href={whatsappUrl} rel="noreferrer" target="_blank">Ir para WhatsApp</a></div> : status === "pending_confirmation" ? <div className="rounded-2xl border p-6"><h2 className="text-xl font-semibold">Aguardando confirmação</h2><p className="mt-2">O parceiro precisa confirmar seu pedido para liberar o prêmio.</p></div> : !showRedemptionForm ? <section className="rounded-2xl border bg-white p-6 shadow-sm"><p className="text-2xl font-bold">Parabéns, você ganhou {promotion.prizeDescription}</p><button className="mt-6 w-full rounded-xl bg-black px-5 py-3 font-semibold uppercase tracking-wide text-white" onClick={() => setShowRedemptionForm(true)} type="button">RESGATE</button></section> : <form className="flex flex-col gap-4 rounded-2xl border bg-white p-6 text-left shadow-sm" onSubmit={(event) => void register(event)}><p className="text-center text-2xl font-bold">Parabéns, você ganhou {promotion.prizeDescription}</p><p className="text-sm text-gray-600">Preencha seus dados para solicitar o resgate.</p><label className="flex flex-col gap-1">Nome<input className="rounded border p-3" required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label className="flex flex-col gap-1">Telefone<input className="rounded border p-3" required value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label><button className="rounded-xl bg-black px-4 py-3 font-semibold text-white disabled:opacity-50" disabled={isSubmitting} type="submit">{isSubmitting ? "Enviando..." : "Solicitar resgate"}</button></form>}
-    {error ? <p aria-live="polite" className="text-sm text-red-600">{error}</p> : null}
+
+      {error ? <p aria-live="polite" className={styles.error}>{error}</p> : null}
+      <footer className={styles.footer}>Promoção que vira jogo.</footer>
+    </div>
   </main>;
 }

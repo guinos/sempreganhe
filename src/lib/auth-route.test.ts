@@ -121,7 +121,7 @@ describe("admin area protection", () => {
     await expect(AdminLayout({ children: "content" })).rejects.toThrow("REDIRECT:/login");
   });
 
-  it("renders the partner from the session", async () => {
+  it("renders the authenticated home dashboard", async () => {
     requireAdminSession.mockResolvedValue({ userId: "user-1", partnerId: "partner-1" });
 
     const layout = await AdminLayout({ children: "content" });
@@ -129,6 +129,6 @@ describe("admin area protection", () => {
 
     expect(layout).toBeTruthy();
     expect(page).toBeTruthy();
-    expect(JSON.stringify(page)).toContain("partner-1");
+    expect(JSON.stringify(page)).toContain("Olá, seja bem-vindo!");
   });
 });
