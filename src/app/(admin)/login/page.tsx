@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -41,6 +42,9 @@ export default function LoginPage() {
         <button className="rounded bg-black px-4 py-2 text-white" type="submit">
           Entrar
         </button>
+        <Link className="text-center text-sm underline outline-none focus-visible:ring-2 focus-visible:ring-blue-600" href="/onboarding">
+          Criar um novo partner
+        </Link>
       </form>
     </main>
   );
