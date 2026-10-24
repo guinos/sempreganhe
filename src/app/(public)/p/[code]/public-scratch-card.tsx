@@ -29,6 +29,8 @@ export default function PublicScratchCard({ code }: { code: string }) {
   const isPointerDownRef = useRef(false);
   const scratchStartedRef = useRef(false);
   const lastProgressCheckRef = useRef(0);
+  const markImageRef = useRef<HTMLImageElement | null>(null);
+  const markMaskRef = useRef<Uint8Array | null>(null);
   const [promotion, setPromotion] = useState<State | null>(null);
   const [form, setForm] = useState({ name: "", phone: "" });
   const [error, setError] = useState("");
@@ -72,31 +74,43 @@ export default function PublicScratchCard({ code }: { code: string }) {
     const scratchContext = context;
 
     function drawCover() {
+      const mark = markImageRef.current ?? new window.Image();
+      markImageRef.current = mark;
+      if (!mark.complete || mark.naturalWidth === 0) {
+        mark.onload = drawCover;
+        mark.src = "/brand/sempreganhe-official-mark.png";
+        return;
+      }
       const rect = scratchCanvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
       scratchCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
       scratchCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
       scratchContext.setTransform(ratio, 0, 0, ratio, 0, 0);
-      scratchContext.clearRect(0, 0, rect.width, rect.height);
       scratchContext.globalCompositeOperation = "source-over";
-      const mark = new window.Image();
-      mark.src = "/brand/sempreganhe-official-mark.png";
-      mark.onload = () => {
-        const scale = Math.min(rect.width / mark.naturalWidth, rect.height / mark.naturalHeight);
-        const width = mark.naturalWidth * scale;
-        const height = mark.naturalHeight * scale;
-        const x = (rect.width - width) / 2;
-        const y = (rect.height - height) / 2;
-        scratchContext.drawImage(mark, x, y, width, height);
-        scratchContext.fillStyle = "rgba(17, 17, 17, 0.52)";
-        scratchContext.font = "800 18px Arial";
-        scratchContext.textAlign = "center";
-        scratchContext.fillText("RASPE AQUI", rect.width / 2, rect.height * 0.68);
-      };
+      scratchContext.clearRect(0, 0, rect.width, rect.height);
+      const scale = Math.min(rect.width / mark.naturalWidth, rect.height / mark.naturalHeight);
+      const width = mark.naturalWidth * scale;
+      const height = mark.naturalHeight * scale;
+      const x = (rect.width - width) / 2;
+      const y = (rect.height - height) / 2;
+      scratchContext.drawImage(mark, x, y, width, height);
+      scratchContext.fillStyle = "rgba(17, 17, 17, 0.52)";
+      scratchContext.font = "800 18px Arial";
+      scratchContext.textAlign = "center";
+      scratchContext.fillText("RASPE AQUI", rect.width / 2, rect.height * 0.68);
+      const alpha = scratchContext.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height).data;
+      const mask = new Uint8Array(alpha.length / 4);
+      for (let index = 3, maskIndex = 0; index < alpha.length; index += 4, maskIndex += 1) {
+        if (alpha[index] > 128) mask[maskIndex] = 1;
+      }
+      markMaskRef.current = mask;
+      setScratchProgress(0);
     }
 
     drawCover();
-    const observer = new ResizeObserver(drawCover);
+    const observer = new ResizeObserver(() => {
+      if (!isPointerDownRef.current && !scratchStartedRef.current) drawCover();
+    });
     observer.observe(scratchCanvas);
     return () => observer.disconnect();
   }, [promotion, scratched]);
@@ -133,13 +147,16 @@ export default function PublicScratchCard({ code }: { code: string }) {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    let transparent = 0;
-    let sampled = 0;
-    for (let index = 3; index < pixels.length; index += 32) {
-      sampled += 1;
-      if (pixels[index] < 128) transparent += 1;
+    const mask = markMaskRef.current;
+    if (!mask) return;
+    let covered = 0;
+    let total = 0;
+    for (let index = 3, pixelIndex = 0; index < pixels.length; index += 4, pixelIndex += 1) {
+      if (!mask[pixelIndex]) continue;
+      total += 1;
+      if (pixels[index] >= 128) covered += 1;
     }
-    const progress = sampled ? transparent / sampled : 0;
+    const progress = total ? 1 - covered / total : 0;
     setScratchProgress(progress);
     if (progress >= REVEAL_THRESHOLD) void completeScratch();
   }
