@@ -41,6 +41,7 @@ describe("admin team routes", () => {
     const response = await POST(request({ name: "Admin", email: "admin@example.com", password: "password123", role: "admin" }));
 
     expect(response.status).toBe(201);
+    expect(getTeamUser).toHaveBeenCalledWith(ownerSession.partnerId, ownerSession.userId);
     expect(createTeamMember).toHaveBeenCalledWith(ownerSession.partnerId, expect.objectContaining({ role: "admin" }));
   });
 

@@ -74,5 +74,5 @@ export default defineConfig([
   {
     settings: { "import-x/resolver": { typescript: createTypeScriptImportResolver() } },
   },
-  globalIgnores(["drizzle/**", "**/*.tsbuildinfo"]),
+  globalIgnores(["drizzle/**", "graphify-out/**", "**/*.tsbuildinfo"]),
 ]);

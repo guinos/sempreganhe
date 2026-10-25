@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { userId, partnerId } = await requireAdminSession();
-    if ((await getTeamUser(userId)).role !== "owner") throw new TeamPermissionError();
+    if ((await getTeamUser(partnerId, userId)).role !== "owner") throw new TeamPermissionError();
     const input = teamMemberCreateSchema.parse(await request.json());
     return NextResponse.json({ member: await createTeamMember(partnerId, input) }, { status: 201 });
   } catch (error) {

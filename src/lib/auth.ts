@@ -1,8 +1,11 @@
 import "server-only";
 
+import { and, eq, inArray } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
+import { getDb } from "@/db";
+import { users } from "@/db/schema";
 import { getAuthSecret } from "./env";
 
 const scryptAsync = promisify(scrypt);
@@ -99,7 +102,19 @@ export async function requireAdminSession(): Promise<AdminSession> {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
   if (!token) throw new AdminSessionError();
-  return verifyAdminSessionToken(token);
+  const session = verifyAdminSessionToken(token);
+  const [user] = await getDb()
+    .select({ id: users.id })
+    .from(users)
+    .where(and(
+      eq(users.id, session.userId),
+      eq(users.partnerId, session.partnerId),
+      eq(users.active, true),
+      inArray(users.role, ["owner", "admin"]),
+    ))
+    .limit(1);
+  if (!user) throw new AdminSessionError();
+  return session;
 }
 
 function sign(encodedPayload: string): string {

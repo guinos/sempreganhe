@@ -58,8 +58,8 @@ export async function updateTeamMember(partnerId: string, id: string, active: bo
   return sanitizeMember(member);
 }
 
-export async function getTeamUser(userId: string): Promise<User> {
-  const [user] = await getDb().select().from(users).where(eq(users.id, userId)).limit(1);
+export async function getTeamUser(partnerId: string, userId: string): Promise<User> {
+  const [user] = await getDb().select().from(users).where(and(eq(users.id, userId), eq(users.partnerId, partnerId))).limit(1);
   if (!user) throw new TeamMemberNotFoundError();
   return user;
 }

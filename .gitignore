@@ -18,6 +18,7 @@
 /.next/
 /.superpowers/
 /out/
+/graphify-out/
 
 # production
 /build

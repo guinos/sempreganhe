@@ -39,6 +39,7 @@ O SempreGanhe é um SaaS mobile-first de promoções e fidelização para partne
 - Operação de confirmação do prêmio pelo partner.
 - Clareza da raspagem e do botão `RESGATE`.
 - Uso recorrente da mesma promoção por diferentes clientes.
+- Onboarding de novo partner validado em produção.
 
 ### Em validação com o piloto
 
@@ -54,7 +55,7 @@ Objetivo: provar que o fluxo gera retorno e é simples de operar no dia a dia.
 - [x] Testar raspagem por toque, mouse e interrupção do gesto.
 - [x] Confirmar que um prêmio só aparece após a raspagem mínima.
 - [x] Validar resgate, confirmação, recusa e atualização da tela pública.
-- [ ] Confirmar que o partner visualiza somente seus próprios dados.
+- [x] Confirmar que o partner visualiza somente seus próprios dados.
 - [ ] Registrar feedback do partner e dos clientes.
 - [ ] Definir as métricas mínimas do piloto: acessos, raspagens, cadastros, resgates e retornos.
 

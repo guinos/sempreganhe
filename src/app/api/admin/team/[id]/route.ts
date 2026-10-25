@@ -7,7 +7,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     const { userId, partnerId } = await requireAdminSession();
-    if ((await getTeamUser(userId)).role !== "owner") throw new TeamPermissionError();
+    if ((await getTeamUser(partnerId, userId)).role !== "owner") throw new TeamPermissionError();
     const { id } = await context.params;
     const { active } = teamMemberUpdateSchema.parse(await request.json());
     return NextResponse.json({ member: await updateTeamMember(partnerId, id, active) });
