@@ -9,6 +9,8 @@ import {
   whatsappPhoneNumberIdSchema,
   whatsappTemplateLanguageSchema,
   whatsappTemplateNameSchema,
+  whatsappWebhookVerifyTokenSchema,
+  whatsappAppSecretSchema,
 } from "./env-schema";
 
 export function getAuthSecret() {
@@ -38,5 +40,12 @@ export function getWhatsAppConfig(): WhatsAppConfig {
     phoneNumberId: parseEnv("WHATSAPP_PHONE_NUMBER_ID", process.env.WHATSAPP_PHONE_NUMBER_ID, whatsappPhoneNumberIdSchema),
     rewardTemplateName: parseEnv("WHATSAPP_REWARD_TEMPLATE_NAME", process.env.WHATSAPP_REWARD_TEMPLATE_NAME, whatsappTemplateNameSchema),
     templateLanguage: parseEnv("WHATSAPP_TEMPLATE_LANGUAGE", process.env.WHATSAPP_TEMPLATE_LANGUAGE, whatsappTemplateLanguageSchema),
+  };
+}
+
+export function getWhatsAppWebhookConfig() {
+  return {
+    verifyToken: parseEnv("WHATSAPP_WEBHOOK_VERIFY_TOKEN", process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN, whatsappWebhookVerifyTokenSchema),
+    appSecret: parseEnv("WHATSAPP_APP_SECRET", process.env.WHATSAPP_APP_SECRET, whatsappAppSecretSchema),
   };
 }
