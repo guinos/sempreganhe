@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { customerRegistrationSchema, findPublicParticipation, ParticipationNotFoundError, redeemParticipation } from "@/lib/public-promotions";
+import { customerRegistrationSchema, findPublicPartnerWhatsapp, findPublicParticipation, ParticipationNotFoundError, redeemParticipation } from "@/lib/public-promotions";
 
 type Context = { params: Promise<{ token: string }> };
 
@@ -16,7 +16,15 @@ export async function POST(request: Request, context: Context) {
   try {
     const input = customerRegistrationSchema.parse(await request.json());
     const result = await redeemParticipation((await context.params).token, input);
-    return NextResponse.json({ participation: result.participation, customer: { name: result.customer.name, phone: result.customer.phone } });
+    const whatsapp = await findPublicPartnerWhatsapp(result.participation.partnerId);
+    return NextResponse.json({
+      participation: {
+        status: result.participation.status,
+        whatsappCountryCode: whatsapp?.countryCode ?? null,
+        whatsappPhone: whatsapp?.phone ?? null,
+      },
+      customer: { name: result.customer.name, phone: result.customer.phone },
+    });
   } catch (error) {
     if (error instanceof ParticipationNotFoundError) return NextResponse.json({ error: "Participation not found" }, { status: 404 });
     if (error instanceof SyntaxError || (error instanceof Error && error.name === "ZodError")) return NextResponse.json({ error: "Invalid request" }, { status: 400 });

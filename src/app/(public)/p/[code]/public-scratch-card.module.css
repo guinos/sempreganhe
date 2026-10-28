@@ -186,6 +186,7 @@
 .statusCard p, .redemptionCard p { color: rgba(244, 239, 229, 0.72); line-height: 1.5; }
 .statusSuccess { border-color: rgba(201, 162, 74, 0.68); }
 .statusError { border-color: rgba(201, 42, 58, 0.72); }
+.whatsappUnavailable { color: #ffcf7a !important; }
 
 .button, .whatsappButton {
   display: inline-flex;
