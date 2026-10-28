@@ -41,9 +41,10 @@ export async function findPublicPromotion(publicCode: string, now = new Date()):
   return promotion;
 }
 
-export async function findPublicPartnerWhatsappPhone(partnerId: string): Promise<string | null> {
-  const [partner] = await getDb().select({ whatsappPhone: partners.whatsappPhone }).from(partners).where(eq(partners.id, partnerId)).limit(1);
-  return partner?.whatsappPhone ?? null;
+export async function findPublicPartnerWhatsapp(partnerId: string): Promise<{ countryCode: string; phone: string } | null> {
+  const [partner] = await getDb().select({ countryCode: partners.whatsappCountryCode, phone: partners.whatsappPhone }).from(partners).where(eq(partners.id, partnerId)).limit(1);
+  if (!partner?.phone) return null;
+  return { countryCode: partner.countryCode, phone: partner.phone };
 }
 
 export async function scratchPromotion(promotion: Promotion, scrapedAt = new Date()): Promise<Participation> {

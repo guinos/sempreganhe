@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent as ReactPointerEvent } from "react";
 import Image from "next/image";
+import { buildWhatsAppRedemptionUrl } from "@/lib/whatsapp-link";
 import styles from "./public-scratch-card.module.css";
 
 type ParticipationStatus = "pending_registration" | "pending_confirmation" | "redeemed" | "rejected";
@@ -11,16 +12,11 @@ type State = {
   prizeDescription?: string;
   publicToken?: string;
   status?: ParticipationStatus;
+  whatsappCountryCode?: string | null;
   whatsappPhone?: string | null;
 };
 
 const REVEAL_THRESHOLD = 0.5;
-
-function normalizeWhatsAppPhone(phone: string | null | undefined) {
-  const digits = phone?.replace(/\D/g, "") ?? "";
-  if (!digits) return null;
-  return digits.startsWith("55") ? digits : `55${digits}`;
-}
 
 export default function PublicScratchCard({ code }: { code: string }) {
   const publicCode = decodeURIComponent(code);
@@ -222,9 +218,7 @@ export default function PublicScratchCard({ code }: { code: string }) {
     }
   }
 
-  const whatsappPhone = normalizeWhatsAppPhone(promotion?.whatsappPhone);
-  const whatsappMessage = encodeURIComponent(`Olá! Solicitei o resgate do prêmio: ${promotion?.prizeDescription ?? "minha promoção"}.`);
-  const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=${whatsappMessage}` : "https://wa.me/";
+  const whatsappUrl = buildWhatsAppRedemptionUrl(promotion?.whatsappCountryCode, promotion?.whatsappPhone, promotion?.prizeDescription ?? "minha promoção") ?? undefined;
   const status = promotion?.status;
 
   if (error && !promotion) return <main className="mx-auto flex min-h-screen max-w-md items-center p-8"><p>{error}</p></main>;

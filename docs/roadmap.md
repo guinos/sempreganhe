@@ -51,7 +51,7 @@ O SempreGanhe é um SaaS mobile-first de promoções e fidelização para partne
 Objetivo: provar que o fluxo gera retorno e é simples de operar no dia a dia.
 
 - [x] Executar um teste ponta a ponta com dados limpos.
-- [ ] Testar em pelo menos dois celulares e navegadores diferentes.
+- [x] Testar em pelo menos dois celulares e navegadores diferentes.
 - [x] Testar raspagem por toque, mouse e interrupção do gesto.
 - [x] Confirmar que um prêmio só aparece após a raspagem mínima.
 - [x] Validar resgate, confirmação, recusa e atualização da tela pública.
@@ -112,6 +112,7 @@ Objetivo: enviar ao cliente uma confirmação oficial do prêmio aprovado, mante
 Estado: em preparação técnica; o disparo automático ainda não está ativado.
 
 - [x] Mapear o fluxo atual de WhatsApp manual (`wa.me`) e seus limites.
+- [x] Redirecionar o cliente para o WhatsApp do partner com mensagem de resgate e código de país configurável.
 - [x] Definir a integração inicial com WhatsApp Business Platform Cloud API.
 - [ ] Criar a conexão de WhatsApp por partner, sem token em texto no banco.
 - [ ] Criar outbox de mensagens com idempotência por evento, status de entrega e retry seguro.

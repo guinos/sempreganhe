@@ -53,6 +53,7 @@ it("defines the required columns and timestamp behavior", () => {
     "id",
     "name",
     "slug",
+    "whatsapp_country_code",
     "whatsapp_phone",
     "address",
     "hide_address",

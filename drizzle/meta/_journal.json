@@ -43,6 +43,13 @@
       "when": 1792701721493,
       "tag": "0006_team-active",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793220816478,
+      "tag": "0007_whatsapp-country-code",
+      "breakpoints": true
     }
   ]
 }

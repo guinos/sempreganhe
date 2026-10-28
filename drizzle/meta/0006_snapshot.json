@@ -1,6 +1,6 @@
 {
-  "id": "b767823d-9b63-4dd4-b553-3bfc5f5c4643",
-  "prevId": "9affc894-6018-4b49-a1e5-7817f6ad26b1",
+  "id": "b1d32d29-2ea9-41f3-b38f-c955d9445e99",
+  "prevId": "b767823d-9b63-4dd4-b553-3bfc5f5c4643",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -337,6 +337,13 @@
           "type": "varchar(120)",
           "primaryKey": false,
           "notNull": true
+        },
+        "whatsapp_country_code": {
+          "name": "whatsapp_country_code",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'55'"
         },
         "whatsapp_phone": {
           "name": "whatsapp_phone",

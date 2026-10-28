@@ -11,6 +11,7 @@ export const partnerRegistrationSchema = z.object({
   ownerName: z.string().trim().min(2).max(160),
   ownerEmail: z.string().trim().toLowerCase().email().max(320),
   ownerPassword: z.string().min(8).max(200),
+  whatsappCountryCode: z.string().trim().regex(/^\d{1,3}$/).optional().default("55"),
   whatsappPhone: z.string().trim().max(32).optional().default("").transform((value) => value || null),
   businessType: z.string().trim().max(80).optional().default("").transform((value) => value || null),
 });
@@ -28,6 +29,7 @@ export async function registerPartner(input: z.infer<typeof partnerRegistrationS
       const [partner] = await tx.insert(partners).values({
         name: input.partnerName,
         slug: input.slug,
+        whatsappCountryCode: input.whatsappCountryCode,
         whatsappPhone: input.whatsappPhone,
         businessType: input.businessType,
       }).returning({ id: partners.id, name: partners.name, slug: partners.slug });

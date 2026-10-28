@@ -8,6 +8,7 @@ import { partners, type Partner } from "@/db/schema";
 export const partnerUpdateSchema = z.object({
   name: z.string().trim().min(2).max(160),
   slug: z.string().trim().min(2).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid slug"),
+  whatsappCountryCode: z.string().trim().regex(/^\d{1,3}$/, "Invalid country code").default("55"),
   whatsappPhone: z.string().trim().max(32).nullable(),
   address: z.string().trim().max(500).nullable(),
   hideAddress: z.boolean(),

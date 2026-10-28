@@ -30,6 +30,7 @@ export const partners = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     slug: varchar("slug", { length: 120 }).notNull(),
+    whatsappCountryCode: varchar("whatsapp_country_code", { length: 3 }).default("55").notNull(),
     whatsappPhone: varchar("whatsapp_phone", { length: 32 }),
     address: text("address"),
     hideAddress: boolean("hide_address").default(false).notNull(),

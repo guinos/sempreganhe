@@ -86,7 +86,17 @@ export default function PartnerOnboardingPage() {
 
         <label className="flex flex-col gap-1">
           WhatsApp do negócio <span className="text-xs text-gray-600 dark:text-gray-300">opcional</span>
-          <input autoComplete="tel" className={inputClass} name="whatsappPhone" />
+          <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-2">
+            <select aria-label="País do WhatsApp" className={inputClass} defaultValue="55" name="whatsappCountryCode">
+              <option value="55">🇧🇷 Brasil (+55)</option>
+              <option value="1">🇺🇸 Estados Unidos/Canadá (+1)</option>
+              <option value="351">🇵🇹 Portugal (+351)</option>
+              <option value="34">🇪🇸 Espanha (+34)</option>
+              <option value="44">🇬🇧 Reino Unido (+44)</option>
+            </select>
+            <input autoComplete="tel" className={inputClass} name="whatsappPhone" placeholder="DDD + número" />
+          </div>
+          <span className="text-xs text-gray-600 dark:text-gray-300">Informe DDD e número, sem o código do país.</span>
         </label>
 
         <label className="flex flex-col gap-1">

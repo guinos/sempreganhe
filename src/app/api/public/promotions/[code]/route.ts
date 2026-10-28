@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { findPublicPartnerWhatsappPhone, findPublicPromotion, PublicPromotionNotFoundError, scratchPromotion } from "@/lib/public-promotions";
+import { findPublicPartnerWhatsapp, findPublicPromotion, PublicPromotionNotFoundError, scratchPromotion } from "@/lib/public-promotions";
 
 type Context = { params: Promise<{ code: string }> };
 
 export async function GET(_request: Request, context: Context) {
   try {
     const promotion = await findPublicPromotion((await context.params).code);
-    return NextResponse.json({ promotion: { title: promotion.title, publicCode: promotion.publicCode, whatsappPhone: await findPublicPartnerWhatsappPhone(promotion.partnerId) } });
+    return NextResponse.json({ promotion: { title: promotion.title, publicCode: promotion.publicCode } });
   } catch (error) {
     return handleError(error);
   }
@@ -16,7 +16,8 @@ export async function POST(_request: Request, context: Context) {
   try {
     const promotion = await findPublicPromotion((await context.params).code);
     const participation = await scratchPromotion(promotion);
-    return NextResponse.json({ participation: { publicToken: participation.publicToken, prizeDescription: participation.prizeDescription, status: participation.status } }, { status: 201 });
+    const whatsapp = await findPublicPartnerWhatsapp(promotion.partnerId);
+    return NextResponse.json({ participation: { publicToken: participation.publicToken, prizeDescription: participation.prizeDescription, status: participation.status, whatsappCountryCode: whatsapp?.countryCode ?? null, whatsappPhone: whatsapp?.phone ?? null } }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }
