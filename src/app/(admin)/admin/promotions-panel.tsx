@@ -23,6 +23,14 @@ const initialForm = {
   endsAt: "",
 };
 
+type PromotionForm = typeof initialForm;
+
+function toDateTimeLocal(value: string) {
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16);
+}
+
 export default function PromotionsPanel() {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [form, setForm] = useState(initialForm);
@@ -30,6 +38,8 @@ export default function PromotionsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedQr, setSelectedQr] = useState<{ promotion: Promotion; url: string } | null>(null);
+  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
+  const [editForm, setEditForm] = useState<PromotionForm>(initialForm);
 
   function publicUrl(promotion: Promotion) {
     return `${window.location.origin}/p/${encodeURIComponent(promotion.publicCode)}`;
@@ -74,6 +84,62 @@ export default function PromotionsPanel() {
     }
   }
 
+  function startEditing(promotion: Promotion) {
+    setEditingPromotion(promotion);
+    setEditForm({
+      title: promotion.title,
+      prizeDescription: promotion.prizeDescription,
+      publicCode: promotion.publicCode,
+      status: promotion.status,
+      startsAt: toDateTimeLocal(promotion.startsAt),
+      endsAt: toDateTimeLocal(promotion.endsAt),
+    });
+    setMessage("");
+  }
+
+  async function updatePromotion(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingPromotion) return;
+    setSaving(true);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/promotions/${editingPromotion.id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error ?? "Não foi possível atualizar a promoção.");
+      setEditingPromotion(null);
+      setMessage("Promoção atualizada com sucesso.");
+      setPromotions(await fetchPromotions());
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível atualizar a promoção.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function pausePromotion(promotion: Promotion) {
+    setSaving(true);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/promotions/${promotion.id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: "paused" }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error ?? "Não foi possível inativar a promoção.");
+      setMessage("Promoção inativada.");
+      setPromotions(await fetchPromotions());
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível inativar a promoção.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
       <form className="flex flex-col gap-4 rounded-xl border p-6" onSubmit={(event) => void submit(event)}>
@@ -95,8 +161,10 @@ export default function PromotionsPanel() {
 
       <div className="rounded-xl border p-6" id="promotions-list">
         <div className="mb-4 flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">Promoções cadastradas</h2></div>
-        {loading ? <p>Carregando...</p> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : <ul className="divide-y">{promotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p><div className="mt-2 flex flex-wrap gap-3"><a aria-label={`Abrir raspadinha: ${promotion.title}`} className="inline-flex text-xs font-medium text-blue-600 underline hover:text-blue-800" href={`/p/${encodeURIComponent(promotion.publicCode)}`} rel="noreferrer" target="_blank">Abrir raspadinha</a><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => setSelectedQr({ promotion, url: publicUrl(promotion) })} type="button">Ver QR Code</button></div></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul>}
+        {loading ? <p>Carregando...</p> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : <ul className="divide-y">{promotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p><div className="mt-2 flex flex-wrap gap-3"><a aria-label={`Abrir raspadinha: ${promotion.title}`} className="inline-flex text-xs font-medium text-blue-600 underline hover:text-blue-800" href={`/p/${encodeURIComponent(promotion.publicCode)}`} rel="noreferrer" target="_blank">Abrir raspadinha</a><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => setSelectedQr({ promotion, url: publicUrl(promotion) })} type="button">Ver QR Code</button><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => startEditing(promotion)} type="button">Editar</button>{promotion.status === "active" && <button className="text-xs font-medium text-red-600 underline hover:text-red-800" disabled={saving} onClick={() => void pausePromotion(promotion)} type="button">Inativar</button>}</div></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul>}
       </div>
+
+      {editingPromotion ? <div aria-label="Editar promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setEditingPromotion(null)} role="presentation"><form aria-labelledby="edit-promotion-title" className="flex max-h-[90vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} onSubmit={(event) => void updatePromotion(event)}><div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-semibold" id="edit-promotion-title">Editar promoção</h3><p className="text-sm text-gray-500">Atualize o período ou altere o status da promoção.</p></div><button aria-label="Fechar edição" className="text-2xl leading-none text-gray-500" onClick={() => setEditingPromotion(null)} type="button">×</button></div><label className="flex flex-col gap-1 text-sm">Título<input className="rounded border p-2" required value={editForm.title} onChange={(event) => setEditForm({ ...editForm, title: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Prêmio<input className="rounded border p-2" required value={editForm.prizeDescription} onChange={(event) => setEditForm({ ...editForm, prizeDescription: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Código público<input className="rounded border p-2" required value={editForm.publicCode} onChange={(event) => setEditForm({ ...editForm, publicCode: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Status<select className="rounded border p-2" value={editForm.status} onChange={(event) => setEditForm({ ...editForm, status: event.target.value })}><option value="draft">Rascunho</option><option value="active">Ativa</option><option value="paused">Inativa</option><option value="ended">Encerrada</option></select></label><div className="grid gap-4 sm:grid-cols-2"><label className="flex flex-col gap-1 text-sm">Início<input className="rounded border p-2" required type="datetime-local" value={editForm.startsAt} onChange={(event) => setEditForm({ ...editForm, startsAt: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" required type="datetime-local" value={editForm.endsAt} onChange={(event) => setEditForm({ ...editForm, endsAt: event.target.value })} /></label></div><div className="flex justify-end gap-3"><button className="rounded border px-4 py-2" onClick={() => setEditingPromotion(null)} type="button">Cancelar</button><button className="rounded bg-black px-4 py-2 text-white disabled:opacity-50" disabled={saving} type="submit">{saving ? "Salvando..." : "Salvar alterações"}</button></div></form></div> : null}
 
       {selectedQr ? <div aria-label="QR Code da promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedQr(null)} role="presentation"><div aria-labelledby="qr-title" aria-modal="true" className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Uma chance especial para você</p><h3 className="mt-1 text-2xl font-bold" id="qr-title">Raspe e Ganhe</h3><p className="mt-2 text-sm text-gray-500">Raspe, descubra seu prêmio e aproveite esta promoção exclusiva.</p><p className="mt-3 text-sm font-semibold text-gray-800">Acesse a promoção pelo QR Code abaixo.</p></div><button aria-label="Fechar" className="text-2xl leading-none text-gray-500" onClick={() => setSelectedQr(null)} type="button">×</button></div><div className="mt-5 flex justify-center rounded-lg bg-white p-3"><QRCodeSVG bgColor="#ffffff" fgColor="#111111" marginSize={4} size={240} title={`QR Code para ${selectedQr.promotion.title}`} value={selectedQr.url} /></div></div></div> : null}
     </section>
