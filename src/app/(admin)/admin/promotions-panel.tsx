@@ -35,16 +35,6 @@ export default function PromotionsPanel() {
     return `${window.location.origin}/p/${encodeURIComponent(promotion.publicCode)}`;
   }
 
-  async function copyPublicUrl() {
-    if (!selectedQr) return;
-    try {
-      await navigator.clipboard.writeText(selectedQr.url);
-      setMessage("Link da raspadinha copiado.");
-    } catch {
-      setMessage("Não foi possível copiar o link. Selecione-o manualmente.");
-    }
-  }
-
   async function fetchPromotions() {
     const response = await fetch("/api/admin/promotions");
     if (!response.ok) throw new Error("Não foi possível carregar as promoções.");
@@ -108,7 +98,7 @@ export default function PromotionsPanel() {
         {loading ? <p>Carregando...</p> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : <ul className="divide-y">{promotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p><div className="mt-2 flex flex-wrap gap-3"><a aria-label={`Abrir raspadinha: ${promotion.title}`} className="inline-flex text-xs font-medium text-blue-600 underline hover:text-blue-800" href={`/p/${encodeURIComponent(promotion.publicCode)}`} rel="noreferrer" target="_blank">Abrir raspadinha</a><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => setSelectedQr({ promotion, url: publicUrl(promotion) })} type="button">Ver QR Code</button></div></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul>}
       </div>
 
-      {selectedQr ? <div aria-label="QR Code da promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedQr(null)} role="presentation"><div aria-labelledby="qr-title" aria-modal="true" className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog"><div className="flex items-start justify-between gap-4"><div><h3 className="text-lg font-semibold" id="qr-title">QR Code da raspadinha</h3><p className="text-sm text-gray-500">{selectedQr.promotion.title}</p></div><button aria-label="Fechar QR Code" className="text-2xl leading-none text-gray-500" onClick={() => setSelectedQr(null)} type="button">×</button></div><div className="mt-5 flex justify-center rounded-lg bg-white p-3"><QRCodeSVG bgColor="#ffffff" fgColor="#111111" marginSize={4} size={240} title={`QR Code para ${selectedQr.promotion.title}`} value={selectedQr.url} /></div><p className="mt-4 text-center text-xs text-gray-500">Escaneie o QR Code para abrir a raspadinha.</p><div className="mt-4 grid gap-2 sm:grid-cols-2"><button className="rounded bg-black px-4 py-2 text-sm font-medium text-white" onClick={() => void copyPublicUrl()} type="button">Copiar link</button><a className="rounded border px-4 py-2 text-center text-sm font-medium" href={selectedQr.url} rel="noreferrer" target="_blank">Abrir link</a></div></div></div> : null}
+      {selectedQr ? <div aria-label="QR Code da promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedQr(null)} role="presentation"><div aria-labelledby="qr-title" aria-modal="true" className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Uma chance especial para você</p><h3 className="mt-1 text-2xl font-bold" id="qr-title">Raspe e Ganhe</h3><p className="mt-2 text-sm text-gray-500">Raspe, descubra seu prêmio e aproveite esta promoção exclusiva.</p></div><button aria-label="Fechar" className="text-2xl leading-none text-gray-500" onClick={() => setSelectedQr(null)} type="button">×</button></div><div className="mt-5 flex justify-center rounded-lg bg-white p-3"><QRCodeSVG bgColor="#ffffff" fgColor="#111111" marginSize={4} size={240} title={`QR Code para ${selectedQr.promotion.title}`} value={selectedQr.url} /></div></div></div> : null}
     </section>
   );
 }
