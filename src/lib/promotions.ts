@@ -15,6 +15,7 @@ export const promotionCreateSchema = z
     status: promotionStatusSchema,
     startsAt: z.coerce.date(),
     endsAt: z.coerce.date(),
+    maxParticipationsPerCustomer: z.coerce.number().int().min(1).default(1),
   })
   .refine((value) => value.endsAt > value.startsAt, { message: "endsAt must be after startsAt", path: ["endsAt"] });
 
@@ -26,6 +27,7 @@ export const promotionUpdateSchema = z
     status: promotionStatusSchema.optional(),
     startsAt: z.coerce.date().optional(),
     endsAt: z.coerce.date().optional(),
+    maxParticipationsPerCustomer: z.coerce.number().int().min(1).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, { message: "At least one field is required" })
   .refine((value) => Boolean(value.startsAt) === Boolean(value.endsAt), {

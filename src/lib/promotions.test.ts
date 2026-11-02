@@ -24,6 +24,7 @@ const promotion = {
   status: "active" as const,
   startsAt: new Date("2026-10-19T00:00:00.000Z"),
   endsAt: new Date("2026-10-19T23:59:59.000Z"),
+  maxParticipationsPerCustomer: 1,
   createdAt: new Date("2026-10-18T00:00:00.000Z"),
   updatedAt: new Date("2026-10-18T00:00:00.000Z"),
 };
@@ -65,6 +66,7 @@ describe("promotion service", () => {
         status: promotion.status,
         startsAt: promotion.startsAt,
         endsAt: promotion.endsAt,
+        maxParticipationsPerCustomer: 1,
       }),
     ).resolves.toEqual(promotion);
     expect(db.insert).toHaveBeenCalledOnce();
@@ -83,6 +85,7 @@ describe("promotion service", () => {
         status: promotion.status,
         startsAt: promotion.startsAt,
         endsAt: promotion.endsAt,
+        maxParticipationsPerCustomer: 1,
       }),
     ).rejects.toBeInstanceOf(PromotionConflictError);
   });

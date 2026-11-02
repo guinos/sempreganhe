@@ -4,6 +4,7 @@ import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db";
 import { customers, type Customer } from "@/db/schema";
+import { normalizePhone } from "@/lib/phone";
 
 const customerFields = {
   name: z.string().trim().min(2).max(160),
@@ -55,7 +56,7 @@ export function listCustomers(partnerId: string, search?: string): Promise<Custo
 
 export async function createCustomer(partnerId: string, input: CustomerCreateInput): Promise<Customer> {
   try {
-    const [customer] = await getDb().insert(customers).values({ ...input, partnerId }).returning();
+    const [customer] = await getDb().insert(customers).values({ ...input, phone: normalizePhone(input.phone), partnerId }).returning();
     return customer;
   } catch (error) {
     if (isPhoneConflict(error)) throw new CustomerConflictError();
@@ -67,7 +68,7 @@ export async function updateCustomer(partnerId: string, id: string, input: Custo
   try {
     const [customer] = await getDb()
       .update(customers)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...input, ...(input.phone ? { phone: normalizePhone(input.phone) } : {}), updatedAt: new Date() })
       .where(and(eq(customers.id, id), eq(customers.partnerId, partnerId)))
       .returning();
     if (!customer) throw new CustomerNotFoundError();

@@ -1,11 +1,12 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getDb } from "@/db";
-import { customers, participations, partners, promotions, type Participation, type Promotion } from "@/db/schema";
+import { customers, participations, partners, promotionCustomerUsage, promotions, type Participation, type Promotion } from "@/db/schema";
 import { isPromotionAvailable } from "@/domain/promotion";
+import { normalizePhone } from "@/lib/phone";
 
 export const customerRegistrationSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -23,6 +24,20 @@ export class ParticipationNotFoundError extends Error {
   constructor() {
     super("Participation not found");
     this.name = "ParticipationNotFoundError";
+  }
+}
+
+export class ParticipationLimitReachedError extends Error {
+  constructor() {
+    super("Customer has reached the participation limit for this promotion");
+    this.name = "ParticipationLimitReachedError";
+  }
+}
+
+export class ParticipationRejectedError extends Error {
+  constructor() {
+    super("Participation was rejected");
+    this.name = "ParticipationRejectedError";
   }
 }
 
@@ -67,20 +82,45 @@ export async function redeemParticipation(
   return getDb().transaction(async (tx) => {
     const [participation] = await tx.select().from(participations).where(eq(participations.publicToken, publicToken)).limit(1);
     if (!participation) throw new ParticipationNotFoundError();
-    if ((participation.status === "pending_confirmation" || participation.status === "redeemed" || participation.status === "rejected") && participation.customerId) {
+    if (participation.status === "rejected") throw new ParticipationRejectedError();
+    if ((participation.status === "pending_confirmation" || participation.status === "redeemed") && participation.customerId) {
       const [customer] = await tx.select().from(customers).where(eq(customers.id, participation.customerId)).limit(1);
       if (customer) return { participation, customer };
     }
 
+    const [partner] = await tx.select({ countryCode: partners.whatsappCountryCode })
+      .from(partners)
+      .where(eq(partners.id, participation.partnerId))
+      .limit(1);
+    const normalizedPhone = normalizePhone(input.phone, partner?.countryCode);
+    const storedPhoneDigits = sql`regexp_replace(${customers.phone}, '\\D', '', 'g')`;
+    const storedPhoneCanonical = sql`CASE WHEN length(${storedPhoneDigits}) <= 11 THEN ${partner?.countryCode ?? "55"} || ${storedPhoneDigits} ELSE ${storedPhoneDigits} END`;
     const [existingCustomer] = await tx.select().from(customers).where(and(
       eq(customers.partnerId, participation.partnerId),
-      eq(customers.phone, input.phone),
+      sql`${storedPhoneCanonical} = ${normalizedPhone}`,
     )).limit(1);
-    const customer = existingCustomer ?? (await tx.insert(customers).values({
-      partnerId: participation.partnerId,
-      name: input.name,
-      phone: input.phone,
-    }).returning())[0];
+    let customer = existingCustomer;
+    if (!customer) {
+      const [createdCustomer] = await tx.insert(customers).values({
+        partnerId: participation.partnerId,
+        name: input.name,
+        phone: normalizedPhone,
+      }).onConflictDoNothing({ target: [customers.partnerId, customers.phone] }).returning();
+      customer = createdCustomer;
+      if (!customer) {
+        [customer] = await tx.select().from(customers).where(and(
+          eq(customers.partnerId, participation.partnerId),
+          sql`${storedPhoneCanonical} = ${normalizedPhone}`,
+        )).limit(1);
+      }
+    }
+    if (!customer) throw new Error("Customer could not be created");
+
+    const [promotion] = await tx.select({ maxParticipationsPerCustomer: promotions.maxParticipationsPerCustomer })
+      .from(promotions)
+      .where(and(eq(promotions.id, participation.promotionId), eq(promotions.partnerId, participation.partnerId)))
+      .limit(1);
+    if (!promotion) throw new PublicPromotionNotFoundError();
 
     const [updated] = await tx.update(participations).set({
       customerId: customer.id,
@@ -88,8 +128,25 @@ export async function redeemParticipation(
       registeredAt: completedAt,
       status: "pending_confirmation",
       updatedAt: completedAt,
-    }).where(and(eq(participations.id, participation.id), eq(participations.status, "pending_registration"))).returning();
+    }).where(and(eq(participations.id, participation.id), eq(participations.status, "pending_registration"), isNull(participations.customerId))).returning();
     if (!updated) return { participation, customer };
+
+    const [usage] = await tx.insert(promotionCustomerUsage).values({
+      partnerId: participation.partnerId,
+      promotionId: participation.promotionId,
+      customerId: customer.id,
+      participationCount: 1,
+      createdAt: completedAt,
+      updatedAt: completedAt,
+    }).onConflictDoUpdate({
+      target: [promotionCustomerUsage.partnerId, promotionCustomerUsage.promotionId, promotionCustomerUsage.customerId],
+      set: {
+        participationCount: sql`${promotionCustomerUsage.participationCount} + 1`,
+        updatedAt: completedAt,
+      },
+      where: sql`${promotionCustomerUsage.participationCount} < ${promotion.maxParticipationsPerCustomer}`,
+    }).returning();
+    if (!usage) throw new ParticipationLimitReachedError();
     return { participation: updated, customer };
   });
 }

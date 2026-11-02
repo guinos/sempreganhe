@@ -2,12 +2,14 @@ import { getTableConfig } from "drizzle-orm/pg-core";
 import { expect, expectTypeOf, it } from "vitest";
 import {
   customers,
+  customerAccounts,
   customerRelations,
   participationStatus,
   participations,
   participationRelations,
   promotionStatus,
   promotions,
+  promotionCustomerUsage,
   promotionRelations,
   partners,
   partnerRelations,
@@ -36,12 +38,12 @@ const uniqueConstraintColumnNames = (
   constraint: ReturnType<typeof getTableConfig>["uniqueConstraints"][number],
 ) => constraint.columns.map((column) => column.name);
 
-const tableNames = [partners, users, promotions, customers, participations].map(
+const tableNames = [partners, users, promotions, customerAccounts, customers, participations, promotionCustomerUsage].map(
   (table) => getTableConfig(table).name,
 );
 
-it("exports the five tenant-aware domain tables", () => {
-  expect(tableNames).toEqual(["partners", "users", "promotions", "customers", "participations"]);
+it("exports the tenant-aware domain tables", () => {
+  expect(tableNames).toEqual(["partners", "users", "promotions", "customer_accounts", "customers", "participations", "promotion_customer_usage"]);
   expect(columnNames(users)).toContain("partner_id");
   expect(columnNames(promotions)).toContain("partner_id");
   expect(columnNames(customers)).toContain("partner_id");
@@ -88,11 +90,13 @@ it("defines the required columns and timestamp behavior", () => {
     "status",
     "starts_at",
     "ends_at",
+    "max_participations_per_customer",
     "created_at",
     "updated_at",
   ]);
   expect(columnNames(customers)).toEqual([
     "id",
+    "account_id",
     "partner_id",
     "name",
     "phone",
@@ -165,13 +169,14 @@ it("allows an unregistered participation and declares integrity constraints", ()
   expect(customerConfig.indexes.some((index) => index.config.unique && indexedColumnNames(index).join(",") === "partner_id,phone")).toBe(true);
   expect(customerConfig.uniqueConstraints).toHaveLength(1);
   expect(promotionConfig.uniqueConstraints).toHaveLength(1);
-  expect(promotionConfig.checks).toHaveLength(1);
+  expect(promotionConfig.checks).toHaveLength(2);
   expect(partnerConfig.foreignKeys).toHaveLength(0);
   expect(userConfig.foreignKeys).toHaveLength(1);
   expect(promotionConfig.foreignKeys).toHaveLength(1);
   expect(customerConfig.foreignKeys).toHaveLength(1);
   expect(participationConfig.foreignKeys).toHaveLength(3);
   expect(participationConfig.foreignKeys.every((foreignKey) => foreignKey.onDelete !== "cascade")).toBe(true);
+  expect(getTableConfig(customerAccounts).indexes).toHaveLength(2);
 });
 
 it("declares tenant-consistent promotion and nullable customer foreign keys", () => {
@@ -206,6 +211,7 @@ it("exposes relations for tenant-owned records and participation links", () => {
   expect(userRelations).toBeDefined();
   expect(promotionRelations).toBeDefined();
   expect(customerRelations).toBeDefined();
+  expect(getTableConfig(customerAccounts)).toBeDefined();
   expect(participationRelations).toBeDefined();
 });
 

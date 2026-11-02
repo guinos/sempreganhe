@@ -1,9 +1,9 @@
 import "server-only";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db";
-import { customers, participations, promotions } from "@/db/schema";
+import { customers, participations, promotionCustomerUsage, promotions } from "@/db/schema";
 
 export const participationActionSchema = z.object({ action: z.enum(["confirm", "reject"]) });
 
@@ -40,14 +40,30 @@ export async function updateParticipationStatus(
   action: z.infer<typeof participationActionSchema>["action"],
 ) {
   const status = action === "confirm" ? "redeemed" : "rejected";
-  const [updated] = await getDb().update(participations).set({
-    status,
-    updatedAt: new Date(),
-  }).where(and(
-    eq(participations.id, participationId),
-    eq(participations.partnerId, partnerId),
-    eq(participations.status, "pending_confirmation"),
-  )).returning();
+  const completedAt = new Date();
+  const updated = await getDb().transaction(async (tx) => {
+    const [participation] = await tx.update(participations).set({
+      status,
+      updatedAt: completedAt,
+    }).where(and(
+      eq(participations.id, participationId),
+      eq(participations.partnerId, partnerId),
+      eq(participations.status, "pending_confirmation"),
+    )).returning();
+    if (!participation) return undefined;
+    if (action === "reject" && participation.customerId) {
+      await tx.update(promotionCustomerUsage).set({
+        participationCount: sql`${promotionCustomerUsage.participationCount} - 1`,
+        updatedAt: completedAt,
+      }).where(and(
+        eq(promotionCustomerUsage.partnerId, partnerId),
+        eq(promotionCustomerUsage.promotionId, participation.promotionId),
+        eq(promotionCustomerUsage.customerId, participation.customerId),
+        gt(promotionCustomerUsage.participationCount, 0),
+      ));
+    }
+    return participation;
+  });
   if (updated) return updated;
 
   const [current] = await getDb().select({ status: participations.status })

@@ -12,6 +12,7 @@ type Promotion = {
   status: string;
   startsAt: string;
   endsAt: string;
+  maxParticipationsPerCustomer: number;
 };
 
 const initialForm = {
@@ -21,6 +22,7 @@ const initialForm = {
   status: "draft",
   startsAt: "",
   endsAt: "",
+  maxParticipationsPerCustomer: 1,
 };
 const PROMOTIONS_PAGE_SIZE = 10;
 
@@ -97,6 +99,7 @@ export default function PromotionsPanel() {
       status: promotion.status,
       startsAt: toDateTimeLocal(promotion.startsAt),
       endsAt: toDateTimeLocal(promotion.endsAt),
+      maxParticipationsPerCustomer: promotion.maxParticipationsPerCustomer,
     });
     setMessage("");
   }
@@ -150,11 +153,8 @@ export default function PromotionsPanel() {
     return promotionFilter === "active" ? isActive : !isActive;
   });
   const pageCount = Math.max(1, Math.ceil(filteredPromotions.length / PROMOTIONS_PAGE_SIZE));
-  const visiblePromotions = filteredPromotions.slice(promotionPage * PROMOTIONS_PAGE_SIZE, (promotionPage + 1) * PROMOTIONS_PAGE_SIZE);
-
-  useEffect(() => {
-    setPromotionPage((page) => Math.min(page, pageCount - 1));
-  }, [pageCount]);
+  const currentPromotionPage = Math.min(promotionPage, pageCount - 1);
+  const visiblePromotions = filteredPromotions.slice(currentPromotionPage * PROMOTIONS_PAGE_SIZE, (currentPromotionPage + 1) * PROMOTIONS_PAGE_SIZE);
 
   return (
     <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
@@ -167,6 +167,7 @@ export default function PromotionsPanel() {
         <label className="flex flex-col gap-1 text-sm">Prêmio<input className="rounded border p-2" required value={form.prizeDescription} onChange={(event) => setForm({ ...form, prizeDescription: event.target.value })} /></label>
         <label className="flex flex-col gap-1 text-sm">Código público<input className="rounded border p-2" required value={form.publicCode} onChange={(event) => setForm({ ...form, publicCode: event.target.value })} /></label>
         <label className="flex flex-col gap-1 text-sm">Status<select className="rounded border p-2" value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="draft">Rascunho</option><option value="active">Ativa</option><option value="paused">Pausada</option></select></label>
+        <label className="flex flex-col gap-1 text-sm">Participações máximas por cliente<input className="rounded border p-2" min="1" required type="number" value={form.maxParticipationsPerCustomer} onChange={(event) => setForm({ ...form, maxParticipationsPerCustomer: Number(event.target.value) })} /></label>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm">Início<input className="rounded border p-2" required type="datetime-local" value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} /></label>
           <label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" required type="datetime-local" value={form.endsAt} onChange={(event) => setForm({ ...form, endsAt: event.target.value })} /></label>

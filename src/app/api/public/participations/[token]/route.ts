@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { customerRegistrationSchema, findPublicPartnerWhatsapp, findPublicParticipation, ParticipationNotFoundError, redeemParticipation } from "@/lib/public-promotions";
+import { customerRegistrationSchema, findPublicPartnerWhatsapp, findPublicParticipation, ParticipationLimitReachedError, ParticipationNotFoundError, ParticipationRejectedError, redeemParticipation } from "@/lib/public-promotions";
+import { InvalidPhoneError } from "@/lib/phone";
 
 type Context = { params: Promise<{ token: string }> };
 
@@ -23,10 +24,13 @@ export async function POST(request: Request, context: Context) {
         whatsappCountryCode: whatsapp?.countryCode ?? null,
         whatsappPhone: whatsapp?.phone ?? null,
       },
-      customer: { name: result.customer.name, phone: result.customer.phone },
+      customer: { name: result.customer.name },
     });
   } catch (error) {
     if (error instanceof ParticipationNotFoundError) return NextResponse.json({ error: "Participation not found" }, { status: 404 });
+    if (error instanceof ParticipationLimitReachedError) return NextResponse.json({ error: "Este cliente já atingiu o limite desta promoção." }, { status: 409 });
+    if (error instanceof ParticipationRejectedError) return NextResponse.json({ error: "Este resgate foi recusado pelo parceiro." }, { status: 409 });
+    if (error instanceof InvalidPhoneError) return NextResponse.json({ error: "Informe um telefone válido." }, { status: 400 });
     if (error instanceof SyntaxError || (error instanceof Error && error.name === "ZodError")) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
