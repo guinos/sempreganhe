@@ -12,8 +12,6 @@ export const CUSTOMER_SESSION_COOKIE_NAME = "customer_session";
 const CUSTOMER_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 export type CustomerSession = { customerAccountId: string };
-type SessionPayload = CustomerSession & { exp: number };
-
 export class CustomerSessionError extends Error {
   constructor() {
     super("Invalid customer session");

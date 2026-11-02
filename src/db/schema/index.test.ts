@@ -173,7 +173,7 @@ it("allows an unregistered participation and declares integrity constraints", ()
   expect(partnerConfig.foreignKeys).toHaveLength(0);
   expect(userConfig.foreignKeys).toHaveLength(1);
   expect(promotionConfig.foreignKeys).toHaveLength(1);
-  expect(customerConfig.foreignKeys).toHaveLength(1);
+  expect(customerConfig.foreignKeys).toHaveLength(2);
   expect(participationConfig.foreignKeys).toHaveLength(3);
   expect(participationConfig.foreignKeys.every((foreignKey) => foreignKey.onDelete !== "cascade")).toBe(true);
   expect(getTableConfig(customerAccounts).indexes).toHaveLength(2);
