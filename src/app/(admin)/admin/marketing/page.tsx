@@ -1,5 +1,6 @@
 import ParticipationsPanel from "../participations-panel";
 import PromotionsPanel from "../promotions-panel";
+import PointsPanel from "../points-panel";
 
 export default function MarketingPage() {
   return (
@@ -13,6 +14,9 @@ export default function MarketingPage() {
       </section>
       <section id="participations" className="scroll-mt-6">
         <ParticipationsPanel />
+      </section>
+      <section id="point-redemptions" className="scroll-mt-6">
+        <PointsPanel />
       </section>
     </main>
   );

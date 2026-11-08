@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Símbolo SempreGanhe dourado transparente</title>
+  <desc id="desc">Silhueta dourada frontal de uma pessoa com os dois braços erguidos em V e punhos fechados, sem fundo.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#E7C873"/>
+      <stop offset="0.48" stop-color="#C9A24A"/>
+      <stop offset="1" stop-color="#C9A24A"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#gold)">
+    <path d="M236 163h40v39c31 5 56 19 73 44l33 234H130l33-234c17-25 42-39 73-44z"/>
+    <g>
+      <path d="M211 259c-19-8-36-21-48-40-15-21-27-52-38-84l-16-42c-3-8 1-16 9-19s16 1 19 9l14 36c7 25 17 49 29 67 12 19 28 32 48 39l17 8-8 34z"/>
+      <path d="M140 119c-10-6-17-15-21-25l-13-30c-3-8 1-16 8-18s15 2 18 9l11 23-5-15c-3-8 1-16 9-18s16 3 18 11l5 19-2-17c-2-8 3-15 11-16s15 4 16 12l3 18 1-12c1-8 8-12 15-9s11 10 8 18l-10 27c-4 12-15 22-27 26-14 5-31 3-45-3z" transform="translate(31.5 0) scale(.8 1)"/>
+    </g>
+    <g transform="translate(512 0) scale(-1 1)">
+      <path d="M211 259c-19-8-36-21-48-40-15-21-27-52-38-84l-16-42c-3-8 1-16 9-19s16 1 19 9l14 36c7 25 17 49 29 67 12 19 28 32 48 39l17 8-8 34z"/>
+      <path d="M140 119c-10-6-17-15-21-25l-13-30c-3-8 1-16 8-18s15 2 18 9l11 23-5-15c-3-8 1-16 9-18s16 3 18 11l5 19-2-17c-2-8 3-15 11-16s15 4 16 12l3 18 1-12c1-8 8-12 15-9s11 10 8 18l-10 27c-4 12-15 22-27 26-14 5-31 3-45-3z" transform="translate(31.5 0) scale(.8 1)"/>
+    </g>
+    <path d="M236 163h40v39l-20 19-20-19z"/>
+    <path d="M218 122c0-26 17-45 38-45s38 19 38 45v13c0 23-17 39-38 39s-38-16-38-39z"/>
+  </g>
+  <g fill="none" stroke="#E7C873" stroke-linecap="round" stroke-width="3" opacity=".9">
+    <path d="M123 61c3-3 7-2 10 2m17-5c3-2 7-1 9 3m22-5c3-1 6 1 7 4m-27 28c7 2 13 1 19-3"/>
+    <path d="M389 61c-3-3-7-2-10 2m-17-5c-3-2-7-1-9 3m-22-5c-3-1-6 1-7 4m27 28c-7 2-13 1-19-3"/>
+  </g>
+</svg>

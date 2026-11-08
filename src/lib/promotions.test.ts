@@ -8,8 +8,10 @@ vi.mock("@/db", () => ({ getDb: () => db }));
 
 import {
   PromotionConflictError,
+  PromotionNotFoundError,
   createPromotion,
   deletePromotion,
+  duplicatePromotion,
   listPromotions,
   updatePromotion,
 } from "./promotions";
@@ -25,6 +27,10 @@ const promotion = {
   startsAt: new Date("2026-10-19T00:00:00.000Z"),
   endsAt: new Date("2026-10-19T23:59:59.000Z"),
   maxParticipationsPerCustomer: 1,
+  mainPrizeProbability: 100,
+  pointsPerParticipation: 0,
+  mainPrizeMaxRedemptions: 1,
+  mainPrizeRedemptions: 0,
   createdAt: new Date("2026-10-18T00:00:00.000Z"),
   updatedAt: new Date("2026-10-18T00:00:00.000Z"),
 };
@@ -67,6 +73,9 @@ describe("promotion service", () => {
         startsAt: promotion.startsAt,
         endsAt: promotion.endsAt,
         maxParticipationsPerCustomer: 1,
+        mainPrizeProbability: 100,
+        pointsPerParticipation: 0,
+        mainPrizeMaxRedemptions: 1,
       }),
     ).resolves.toEqual(promotion);
     expect(db.insert).toHaveBeenCalledOnce();
@@ -86,8 +95,46 @@ describe("promotion service", () => {
         startsAt: promotion.startsAt,
         endsAt: promotion.endsAt,
         maxParticipationsPerCustomer: 1,
+        mainPrizeProbability: 100,
+        pointsPerParticipation: 0,
+        mainPrizeMaxRedemptions: 1,
       }),
     ).rejects.toBeInstanceOf(PromotionConflictError);
+  });
+
+  it("duplicates a promotion as a draft with a fresh code and no redemptions", async () => {
+    const selectQuery = chain([promotion]);
+    const copy = {
+      ...promotion,
+      id: "promotion-copy",
+      title: "Suco em dobro (cópia)",
+      publicCode: "SEGUNDA-SUCO-COPIA-0123456789ABCDEF",
+      status: "draft" as const,
+      mainPrizeRedemptions: 0,
+    };
+    const insertQuery = chain([copy]);
+    db.select = vi.fn().mockReturnValue(selectQuery);
+    db.insert = vi.fn().mockReturnValue(insertQuery);
+
+    await expect(duplicatePromotion(partnerId, promotion.id)).resolves.toEqual(copy);
+    expect(selectQuery.where).toHaveBeenCalledOnce();
+    expect(insertQuery.values).toHaveBeenCalledWith(expect.objectContaining({
+      partnerId,
+      title: "Suco em dobro (cópia)",
+      publicCode: expect.stringMatching(/^SEGUNDA-SUCO-COPIA-[A-F0-9]{16}$/),
+      status: "draft",
+      mainPrizeRedemptions: 0,
+    }));
+  });
+
+  it("does not duplicate a promotion outside the partner", async () => {
+    const selectQuery = chain([]);
+    const insert = vi.fn();
+    db.select = vi.fn().mockReturnValue(selectQuery);
+    db.insert = insert;
+
+    await expect(duplicatePromotion(partnerId, promotion.id)).rejects.toBeInstanceOf(PromotionNotFoundError);
+    expect(insert).not.toHaveBeenCalled();
   });
 
   it("updates a promotion by partner and id", async () => {

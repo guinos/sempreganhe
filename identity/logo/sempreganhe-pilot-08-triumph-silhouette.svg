@@ -1,0 +1,42 @@
+svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="title desc">
+  <title id="title">SempreGanhe — piloto silhueta de triunfo</title>
+  <desc id="desc">Logo dourado sobre fundo preto com silhueta de uma pessoa levantando os dois braços em comemoração.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F5D982"/>
+      <stop offset="0.5" stop-color="#C9A24A"/>
+      <stop offset="1" stop-color="#8F671C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="320" rx="38" fill="#050505"/>
+
+  <!-- Símbolo simplificado: pessoa em triunfo com os dois braços erguidos -->
+  <g transform="translate(45 24)" fill="url(#gold)">
+    <!-- punho esquerdo -->
+    <path d="M57 21c-6-7-4-16 3-20 5-3 11-2 15 2l5-3c7-4 15 0 17 7l2 9c2 9-2 18-10 23L77 47 60 37Z"/>
+    <!-- punho direito -->
+    <path d="M275 21c6-7 4-16-3-20-5-3-11-2-15 2l-5-3c-7-4-15 0-17 7l-2 9c-2 9 2 18 10 23l12 8 17-10Z"/>
+
+    <!-- braço esquerdo, levantado -->
+    <path d="M70 43c7 28 19 55 37 78l28 35-24 22-43-42C47 128 34 98 26 62Z"/>
+    <!-- braço direito, levantado -->
+    <path d="M262 43c-7 28-19 55-37 78l-28 35 24 22 43-42c21-28 34-58 42-94Z"/>
+
+    <!-- cabeça -->
+    <circle cx="166" cy="91" r="31"/>
+    <path d="M136 83c3-23 17-34 31-34s28 11 31 34c-17-8-42-8-62 0Z"/>
+
+    <!-- pescoço, ombros e torso -->
+    <path d="M145 116h42v31h-42z"/>
+    <path d="M145 137c-31 7-54 25-68 53l-20 107h218l-20-107c-14-28-37-46-68-53l-36 24Z"/>
+    <path d="M112 159c16 15 34 23 54 23s38-8 54-23l18 21c-20 20-44 31-72 31s-52-11-72-31Z" opacity=".82"/>
+  </g>
+
+  <!-- wordmark -->
+  <g font-family="Manrope,Arial,sans-serif" font-weight="800" letter-spacing="-2">
+    <text x="390" y="145" fill="#F4EFE5" font-size="70">Sempre</text>
+    <text x="650" y="145" fill="url(#gold)" font-size="70">Ganhe</text>
+  </g>
+  <text x="395" y="188" fill="#C9A24A" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2">PROMOÇÃO QUE VIRA JOGO</text>
+</svg>

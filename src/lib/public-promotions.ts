@@ -63,15 +63,40 @@ export async function findPublicPartnerWhatsapp(partnerId: string): Promise<{ co
 }
 
 export async function scratchPromotion(promotion: Promotion, scrapedAt = new Date()): Promise<Participation> {
-  const [participation] = await getDb().insert(participations).values({
-    partnerId: promotion.partnerId,
-    promotionId: promotion.id,
-    publicToken: randomUUID(),
-    prizeDescription: promotion.prizeDescription,
-    scrapedAt,
-    status: "pending_registration",
-  }).returning();
-  return participation;
+  return getDb().transaction(async (tx) => {
+    const [current] = await tx.select().from(promotions)
+      .where(and(eq(promotions.id, promotion.id), eq(promotions.partnerId, promotion.partnerId)))
+      .for("update")
+      .limit(1);
+    if (!current || !isPromotionAvailable(current, scrapedAt)) throw new PublicPromotionNotFoundError();
+
+    const canAwardMainPrize = current.mainPrizeRedemptions < current.mainPrizeMaxRedemptions;
+    const awardsMainPrize = canAwardMainPrize && Math.random() * 100 < current.mainPrizeProbability;
+    const selectedRewardType = awardsMainPrize ? "main_prize" : "points";
+    if (!awardsMainPrize && current.pointsPerParticipation <= 0) {
+      throw new PublicPromotionNotFoundError();
+    }
+    const pointsAwarded = awardsMainPrize ? 0 : current.pointsPerParticipation;
+    const prizeDescription = awardsMainPrize ? current.prizeDescription : `${pointsAwarded} pontos`;
+    const [participation] = await tx.insert(participations).values({
+      partnerId: current.partnerId,
+      promotionId: current.id,
+      publicToken: randomUUID(),
+      prizeDescription,
+      rewardType: selectedRewardType,
+      pointsAwarded,
+      scrapedAt,
+      status: "pending_registration",
+    }).returning();
+    if (awardsMainPrize) {
+      await tx.update(promotions).set({
+        mainPrizeRedemptions: sql`${promotions.mainPrizeRedemptions} + 1`,
+        status: current.mainPrizeRedemptions + 1 >= current.mainPrizeMaxRedemptions ? "ended" : current.status,
+        updatedAt: scrapedAt,
+      }).where(and(eq(promotions.id, current.id), eq(promotions.partnerId, current.partnerId)));
+    }
+    return participation;
+  });
 }
 
 export async function redeemParticipation(

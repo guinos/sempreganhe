@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomBytes } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db";
@@ -16,8 +17,15 @@ export const promotionCreateSchema = z
     startsAt: z.coerce.date(),
     endsAt: z.coerce.date(),
     maxParticipationsPerCustomer: z.coerce.number().int().min(1).default(1),
+    mainPrizeProbability: z.coerce.number().int().min(0).max(100).default(100),
+    pointsPerParticipation: z.coerce.number().int().min(0).max(100).default(0),
+    mainPrizeMaxRedemptions: z.coerce.number().int().min(1).default(1),
   })
-  .refine((value) => value.endsAt > value.startsAt, { message: "endsAt must be after startsAt", path: ["endsAt"] });
+  .refine((value) => value.endsAt > value.startsAt, { message: "endsAt must be after startsAt", path: ["endsAt"] })
+  .refine((value) => value.mainPrizeProbability === 100 || value.pointsPerParticipation > 0, {
+    message: "Points per participation are required when the main prize probability is below 100",
+    path: ["pointsPerParticipation"],
+  });
 
 export const promotionUpdateSchema = z
   .object({
@@ -28,6 +36,9 @@ export const promotionUpdateSchema = z
     startsAt: z.coerce.date().optional(),
     endsAt: z.coerce.date().optional(),
     maxParticipationsPerCustomer: z.coerce.number().int().min(1).optional(),
+    mainPrizeProbability: z.coerce.number().int().min(0).max(100).optional(),
+    pointsPerParticipation: z.coerce.number().int().min(0).max(100).optional(),
+    mainPrizeMaxRedemptions: z.coerce.number().int().min(1).optional(),
   })
   .refine((value) => Object.keys(value).length > 0, { message: "At least one field is required" })
   .refine((value) => Boolean(value.startsAt) === Boolean(value.endsAt), {
@@ -37,6 +48,10 @@ export const promotionUpdateSchema = z
   .refine((value) => !value.startsAt || !value.endsAt || value.endsAt > value.startsAt, {
     message: "endsAt must be after startsAt",
     path: ["endsAt"],
+  })
+  .refine((value) => value.mainPrizeProbability === undefined || value.mainPrizeProbability === 100 || (value.pointsPerParticipation ?? 0) > 0, {
+    message: "Points per participation are required when the main prize probability is below 100",
+    path: ["pointsPerParticipation"],
   });
 
 export type PromotionCreateInput = z.infer<typeof promotionCreateSchema>;
@@ -56,6 +71,13 @@ export class PromotionNotFoundError extends Error {
   }
 }
 
+export class PromotionLimitError extends Error {
+  constructor() {
+    super("O limite principal não pode ser menor que a quantidade de prêmios já resgatados.");
+    this.name = "PromotionLimitError";
+  }
+}
+
 export function listPromotions(partnerId: string): Promise<Promotion[]> {
   return getDb().select().from(promotions).where(eq(promotions.partnerId, partnerId)).orderBy(desc(promotions.createdAt));
 }
@@ -70,6 +92,36 @@ export async function createPromotion(partnerId: string, input: PromotionCreateI
   }
 }
 
+export async function duplicatePromotion(partnerId: string, id: string): Promise<Promotion> {
+  const [source] = await getDb()
+    .select()
+    .from(promotions)
+    .where(and(eq(promotions.id, id), eq(promotions.partnerId, partnerId)))
+    .limit(1);
+  if (!source) throw new PromotionNotFoundError();
+
+  const codeSuffix = `-COPIA-${randomBytes(8).toString("hex").toUpperCase()}`;
+  const [copy] = await getDb()
+    .insert(promotions)
+    .values({
+      partnerId,
+      title: `${source.title.slice(0, 192)} (cópia)`,
+      prizeDescription: source.prizeDescription,
+      publicCode: `${source.publicCode.slice(0, 128 - codeSuffix.length)}${codeSuffix}`,
+      status: "draft",
+      startsAt: source.startsAt,
+      endsAt: source.endsAt,
+      maxParticipationsPerCustomer: source.maxParticipationsPerCustomer,
+      mainPrizeProbability: source.mainPrizeProbability,
+      pointsPerParticipation: source.pointsPerParticipation,
+      mainPrizeMaxRedemptions: source.mainPrizeMaxRedemptions,
+      mainPrizeRedemptions: 0,
+    })
+    .returning();
+
+  return copy;
+}
+
 export async function updatePromotion(partnerId: string, id: string, input: PromotionUpdateInput): Promise<Promotion> {
   try {
     const [promotion] = await getDb()
@@ -81,6 +133,7 @@ export async function updatePromotion(partnerId: string, id: string, input: Prom
     return promotion;
   } catch (error) {
     if (error instanceof PromotionNotFoundError) throw error;
+    if (isMainPrizeLimitConflict(error)) throw new PromotionLimitError();
     if (isPublicCodeConflict(error)) throw new PromotionConflictError();
     throw error;
   }
@@ -96,8 +149,19 @@ export async function deletePromotion(partnerId: string, id: string): Promise<Pr
 }
 
 function isPublicCodeConflict(error: unknown): boolean {
-  return Boolean(
-    error && typeof error === "object" && "code" in error && error.code === "23505" &&
-      "constraint" in error && error.constraint === "promotions_public_code_unique",
+  if (!error || typeof error !== "object") return false;
+  const databaseError = error as { code?: unknown; constraint?: unknown; message?: unknown };
+  return databaseError.code === "23505" && (
+    databaseError.constraint === "promotions_public_code_unique" ||
+    (typeof databaseError.message === "string" && databaseError.message.includes('"promotions_public_code_unique"'))
+  );
+}
+
+function isMainPrizeLimitConflict(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const databaseError = error as { code?: unknown; constraint?: unknown; message?: unknown };
+  return databaseError.code === "23514" && (
+    databaseError.constraint === "promotions_main_prize_redemptions_check" ||
+    (typeof databaseError.message === "string" && databaseError.message.includes("promotions_main_prize_redemptions_check"))
   );
 }

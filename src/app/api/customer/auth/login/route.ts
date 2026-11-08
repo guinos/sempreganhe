@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const account = await authenticateCustomer(body.email.trim(), body.password);
     if (!account) return NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 });
     const response = NextResponse.json({ ok: true });
-    response.cookies.set(CUSTOMER_SESSION_COOKIE_NAME, createCustomerSessionToken({ customerAccountId: account.id }), customerSessionCookieOptions);
+    response.cookies.set(CUSTOMER_SESSION_COOKIE_NAME, createCustomerSessionToken({ customerAccountId: account.id, issuedAt: Math.floor(Date.now() / 1000) }), customerSessionCookieOptions);
     return response;
   } catch {
     return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });

@@ -13,6 +13,8 @@ function participation(status: Participation["status"] = "pending_registration")
     customerId: status === "pending_confirmation" || status === "redeemed" ? "old-customer-id" : null,
     publicToken: "public-token",
     prizeDescription: "Um café",
+    rewardType: "main_prize",
+    pointsAwarded: 0,
     privacyAcceptedAt: status === "pending_confirmation" || status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,
     scrapedAt: new Date("2026-10-19T09:30:00.000Z"),
     registeredAt: status === "pending_confirmation" || status === "redeemed" ? new Date("2026-10-19T11:00:00.000Z") : null,

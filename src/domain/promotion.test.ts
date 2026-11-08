@@ -16,6 +16,10 @@ function promotion(status: Promotion["status"]): Promotion {
     startsAt,
     endsAt,
     maxParticipationsPerCustomer: 1,
+    mainPrizeProbability: 100,
+    pointsPerParticipation: 0,
+    mainPrizeMaxRedemptions: 1,
+    mainPrizeRedemptions: 0,
     createdAt: startsAt,
     updatedAt: startsAt,
   };

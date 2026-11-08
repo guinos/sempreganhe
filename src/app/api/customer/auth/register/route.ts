@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const account = await registerCustomerAccount(customerAccountRegistrationSchema.parse(await request.json()));
     const response = NextResponse.json({ ok: true }, { status: 201 });
-    response.cookies.set(CUSTOMER_SESSION_COOKIE_NAME, createCustomerSessionToken({ customerAccountId: account.id }), customerSessionCookieOptions);
+    response.cookies.set(CUSTOMER_SESSION_COOKIE_NAME, createCustomerSessionToken({ customerAccountId: account.id, issuedAt: Math.floor(Date.now() / 1000) }), customerSessionCookieOptions);
     return response;
   } catch (error) {
     if (error instanceof CustomerAccountConflictError) return NextResponse.json({ error: "E-mail ou telefone já cadastrado." }, { status: 409 });

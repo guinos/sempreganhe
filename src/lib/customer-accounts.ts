@@ -59,7 +59,7 @@ export async function registerCustomerAccount(input: z.infer<typeof customerAcco
       return account;
     });
   } catch (error) {
-    if (error && typeof error === "object" && "code" in error && error.code === "23505") throw new CustomerAccountConflictError();
+    if (isUniqueViolation(error)) throw new CustomerAccountConflictError();
     throw error;
   }
 }
@@ -101,7 +101,13 @@ export async function updateCustomerAccount(accountId: string, input: z.infer<ty
     return getCustomerAccount(account.id);
   } catch (error) {
     if (error instanceof CustomerAccountNotFoundError) throw error;
-    if (error && typeof error === "object" && "code" in error && error.code === "23505") throw new CustomerAccountConflictError();
+    if (isUniqueViolation(error)) throw new CustomerAccountConflictError();
     throw error;
   }
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as { code?: unknown; cause?: unknown };
+  return candidate.code === "23505" || isUniqueViolation(candidate.cause);
 }

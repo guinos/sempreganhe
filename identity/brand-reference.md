@@ -1,14 +1,17 @@
-# Referências visuais — nova direção v0.3
+# Referências visuais — logo oficial inicial v1.0
 
-Arquivo de referência anterior fornecido pelo cliente:
+Arquivos oficiais fornecidos pelo cliente:
 
-`C:\Users\thigu\Downloads\Guia de marca SempreGanhe multicolorido.png`
+`identity/logo/official/`
 
-## Referência anterior
+## Assets oficiais
 
-O arquivo multicolorido permanece no histórico da exploração, mas não é mais a direção principal.
+- `sempreganhe-official-dark.png` — aplicação principal em fundo preto.
+- `sempreganhe-official-textured-dark.png` — aplicação em fundo preto texturizado.
+- `sempreganhe-official-light.png` — aplicação em fundo claro.
+- `sempreganhe-official-mark.png` — símbolo/silhueta dourada isolada.
 
-## Elementos aprovados para a nova direção
+## Elementos oficiais
 
 - preto fosco como base dominante;
 - dourado metálico como cor de prêmio e valor;
@@ -16,17 +19,13 @@ O arquivo multicolorido permanece no histórico da exploração, mas não é mai
 - iluminação dramática e composição premium;
 - contraste alto e textura sutil;
 - estética de cassino editorial, sem promessa financeira;
-- raspadinha e revelação como vínculo com o produto.
-
-## Elementos preservados
-
-- logo horizontal com cartão de raspadinha e dedo;
-- cartão inclinado para sugerir ação;
-- raspagem diagonal parcialmente revelada;
-- estrela dourada aparecendo como prêmio;
+- silhueta dourada de pessoa comemorando com os dois braços levantados;
+- wordmark “SEMPRE GANHE”;
+- “GANHE” em dourado/amarelo;
 - slogan: **Promoção que vira jogo.**;
-- versão monocromática e alto contraste.
+- preto como fundo principal;
+- versão clara para fundos brancos.
 
-## Próxima consolidação
+## Regra de uso
 
-A próxima rodada deve redesenhar o logo em SVG vetorial com a nova paleta, mantendo o gesto de raspagem e reduzindo a aparência infantil/multicolorida.
+Os PNGs fornecidos são a referência oficial inicial. Não redesenhar a silhueta nem substituir o wordmark por pilotos SVG anteriores. Uma futura vetorização deve preservar exatamente a pose, proporção, hierarquia e espaçamento desses assets.

@@ -17,6 +17,6 @@ ALTER TABLE "promotion_customer_usage" ADD CONSTRAINT "promotion_customer_usage_
 INSERT INTO "promotion_customer_usage" ("partner_id", "promotion_id", "customer_id", "participation_count")
 SELECT "partner_id", "promotion_id", "customer_id", COUNT(*)
 FROM "participations"
-WHERE "customer_id" IS NOT NULL AND "status" IN ('pending_confirmation', 'redeemed')
+WHERE "customer_id" IS NOT NULL AND "status"::text IN ('pending_confirmation', 'redeemed')
 GROUP BY "partner_id", "promotion_id", "customer_id";--> statement-breakpoint
 ALTER TABLE "promotions" ADD CONSTRAINT "promotions_max_participations_check" CHECK ("promotions"."max_participations_per_customer" > 0);

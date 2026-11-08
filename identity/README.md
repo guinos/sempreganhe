@@ -1,8 +1,10 @@
 # SempreGanhe — pilotos de identidade
 
-Status: **nova direção em consolidação — v0.3**
+Status: **logo oficial inicial definido — v1.0**
 
 Direção atual: **cassino premium + promoção digital**. A marca deve transmitir valor, exclusividade, expectativa e recompensa, sem parecer uma casa de apostas.
+
+Logo oficial inicial: arquivos fornecidos pelo cliente em `logo/official/`.
 
 Slogan aprovado: **Promoção que vira jogo.**
 
@@ -22,7 +24,7 @@ O slogan deve aparecer em materiais de campanha, apresentações da marca e mome
 - `pilots/logo-pilot-06-hidden-prize.svg` — prêmio escondido sob a camada
 - `pilots/logo-primary-revised.svg` — versão revisada selecionada para evolução
 
-Os pilotos anteriores são hipóteses de exploração da direção multicolorida. A nova direção v0.3 passa a ser a base para o próximo piloto de logo.
+Os pilotos anteriores são hipóteses de exploração e não devem ser usados como logo oficial. A partir desta decisão, usar os assets em `logo/official/`.
 
 ## Pacote consolidado
 

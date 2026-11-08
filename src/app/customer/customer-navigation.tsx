@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export type CustomerView = "dashboard" | "account";
+export type CustomerView = "dashboard" | "points" | "account";
 
 export default function CustomerNavigation({ activeView, onChange }: { activeView: CustomerView; onChange: (view: CustomerView) => void }) {
   const router = useRouter();
@@ -26,6 +26,9 @@ export default function CustomerNavigation({ activeView, onChange }: { activeVie
           </button>
           <button aria-current={activeView === "account" ? "page" : undefined} className={`block w-full rounded-lg px-3 py-3 text-left text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-blue-400 ${activeView === "account" ? "bg-blue-600 hover:bg-blue-500" : "bg-slate-900/70 hover:bg-slate-800"}`} onClick={() => onChange("account")} type="button">
             Meus dados
+          </button>
+          <button aria-current={activeView === "points" ? "page" : undefined} className={`block w-full rounded-lg px-3 py-3 text-left text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-blue-400 ${activeView === "points" ? "bg-blue-600 hover:bg-blue-500" : "bg-slate-900/70 hover:bg-slate-800"}`} onClick={() => onChange("points")} type="button">
+            Meus pontos
           </button>
         </nav>
         <button className="mt-6 rounded-lg border border-slate-700 px-3 py-2 text-left text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white" onClick={() => void logout()} type="button">

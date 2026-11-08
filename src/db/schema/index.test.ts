@@ -3,13 +3,19 @@ import { expect, expectTypeOf, it } from "vitest";
 import {
   customers,
   customerAccounts,
+  customerPasswordResetTokens,
   customerRelations,
   participationStatus,
+  rewardType,
   participations,
   participationRelations,
   promotionStatus,
   promotions,
   promotionCustomerUsage,
+  customerPointBalances,
+  pointRewards,
+  pointRedemptions,
+  customerPointsLedger,
   promotionRelations,
   partners,
   partnerRelations,
@@ -38,16 +44,23 @@ const uniqueConstraintColumnNames = (
   constraint: ReturnType<typeof getTableConfig>["uniqueConstraints"][number],
 ) => constraint.columns.map((column) => column.name);
 
-const tableNames = [partners, users, promotions, customerAccounts, customers, participations, promotionCustomerUsage].map(
+const tableNames = [partners, users, promotions, customerAccounts, customers, participations, promotionCustomerUsage, customerPointBalances, pointRewards, pointRedemptions, customerPointsLedger].map(
   (table) => getTableConfig(table).name,
 );
 
 it("exports the tenant-aware domain tables", () => {
-  expect(tableNames).toEqual(["partners", "users", "promotions", "customer_accounts", "customers", "participations", "promotion_customer_usage"]);
+  expect(tableNames).toEqual(["partners", "users", "promotions", "customer_accounts", "customers", "participations", "promotion_customer_usage", "customer_point_balances", "point_rewards", "point_redemptions", "customer_points_ledger"]);
   expect(columnNames(users)).toContain("partner_id");
   expect(columnNames(promotions)).toContain("partner_id");
   expect(columnNames(customers)).toContain("partner_id");
   expect(columnNames(participations)).toContain("partner_id");
+});
+
+it("defines single-use customer password reset tokens", () => {
+  const config = getTableConfig(customerPasswordResetTokens);
+  expect(config.name).toBe("customer_password_reset_tokens");
+  expect(columnNames(customerPasswordResetTokens)).toEqual(["id", "customer_account_id", "token_hash", "expires_at", "used_at", "created_at"]);
+  expect(config.indexes.some((index) => index.config.unique && index.config.name === "customer_password_reset_tokens_hash_unique")).toBe(true);
 });
 
 it("defines the required columns and timestamp behavior", () => {
@@ -91,6 +104,10 @@ it("defines the required columns and timestamp behavior", () => {
     "starts_at",
     "ends_at",
     "max_participations_per_customer",
+    "main_prize_probability",
+    "points_per_participation",
+    "main_prize_max_redemptions",
+    "main_prize_redemptions",
     "created_at",
     "updated_at",
   ]);
@@ -110,6 +127,8 @@ it("defines the required columns and timestamp behavior", () => {
     "customer_id",
     "public_token",
     "prize_description",
+    "reward_type",
+    "points_awarded",
     "privacy_accepted_at",
     "scraped_at",
     "registered_at",
@@ -133,6 +152,7 @@ it("defines the approved enum values", () => {
   expect(userRole.enumValues).toEqual(["owner", "admin"]);
   expect(promotionStatus.enumValues).toEqual(["draft", "active", "paused", "ended"]);
   expect(participationStatus.enumValues).toEqual(["pending_registration", "pending_confirmation", "redeemed", "rejected"]);
+  expect(rewardType.enumValues).toEqual(["main_prize", "points"]);
 });
 
 it("declares the lowercase email check while keeping email unique", () => {

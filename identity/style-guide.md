@@ -1,6 +1,6 @@
-# Guia de marca SempreGanhe — v0.3
+# Guia de marca SempreGanhe — v1.0
 
-Status: **nova direção em consolidação**
+Status: **logo oficial inicial definido**
 
 ## Essência
 
@@ -14,11 +14,11 @@ Cassino premium + promoção digital. A linguagem deve gerar expectativa e valor
 
 ## Assinatura visual
 
-O elemento proprietário é o cartão de raspadinha sendo revelado. O acabamento visual é preto fosco, dourado e vermelho profundo; a estrela aparece como prêmio descoberto, não como símbolo isolado.
+O elemento principal da identidade é a silhueta dourada de uma pessoa comemorando com os dois braços levantados. O acabamento visual é preto fosco e dourado; vermelho permanece como cor secundária de campanha.
 
 ## Sistema
 
-- Logo: usar os arquivos em `identity/logo/`.
+- Logo: usar os arquivos oficiais em `identity/logo/official/`; os pilotos SVG são históricos.
 - Cor: usar os tokens documentados em `colors.md`, com preto fosco dominante, dourado de valor e vermelho de ação.
 - Tipografia: `Barlow Condensed` ou `Roboto Slab` para destaque e `Manrope` para interface e leitura.
 - Imagem: composição premium, fundo preto fosco, luz dourada, vermelho profundo e brilho controlado.
