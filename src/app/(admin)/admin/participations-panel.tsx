@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 type Participation = {
   id: string;
   prizeDescription: string;
+  rewardType: "main_prize" | "points";
+  pointsAwarded: number;
   status: "pending_registration" | "pending_confirmation" | "redeemed" | "rejected";
   scrapedAt: string;
   promotionTitle: string;
@@ -16,13 +18,17 @@ const PARTICIPATIONS_PAGE_SIZE = 10;
 export default function ParticipationsPanel() {
   const [items, setItems] = useState<Participation[]>([]);
   const [error, setError] = useState("");
+  const [pointsNotice, setPointsNotice] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | Participation["status"]>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
 
-  useEffect(() => {
+  function loadParticipations() {
+    setLoading(true);
+    setLoadError(false);
     let cancelled = false;
     void fetch("/api/admin/participations")
       .then(async (response) => {
@@ -30,14 +36,20 @@ export default function ParticipationsPanel() {
         return (await response.json()).participations as Participation[];
       })
       .then((data) => { if (!cancelled) setItems(data); })
-      .catch((reason: Error) => { if (!cancelled) setError(reason.message); })
+      .catch((reason: Error) => { if (!cancelled) { setError(reason.message); setLoadError(true); } })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
+  }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadParticipations(); }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   async function updateStatus(id: string, action: "confirm" | "reject") {
     setActionId(id);
     setError("");
+    setPointsNotice("");
     try {
       const response = await fetch(`/api/admin/participations/${id}`, {
         method: "PATCH",
@@ -45,7 +57,14 @@ export default function ParticipationsPanel() {
         body: JSON.stringify({ action }),
       });
       const body = await response.json();
-      if (!response.ok) throw new Error(body.error ?? "Não foi possível atualizar o resgate.");
+      if (!response.ok) {
+        if (body.code === "POINTS_LIMIT_REACHED") {
+          setItems((current) => current.filter((item) => item.id !== id));
+          setPointsNotice(body.error);
+          return;
+        }
+        throw new Error(body.error ?? "Não foi possível atualizar o resgate.");
+      }
       setItems((current) => current.map((item) => item.id === id ? { ...item, status: body.participation.status } : item));
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Não foi possível atualizar o resgate.");
@@ -78,8 +97,10 @@ export default function ParticipationsPanel() {
   return (
     <section className="rounded-xl border p-6">
       <div className="mb-4"><h2 className="text-xl font-semibold">Participações e resgates</h2><p className="text-sm text-gray-500">Acompanhe quem raspou e quem concluiu o cadastro.</p></div>
-      {loading ? <p>Carregando...</p> : null}
+      {loading ? <p aria-live="polite">Carregando…</p> : null}
+      {loadError ? <button className="rounded border px-3 py-2 text-sm" onClick={() => loadParticipations()} type="button">Tentar novamente</button> : null}
       {error ? <p aria-live="polite" className="text-sm text-red-600">{error}</p> : null}
+      {pointsNotice ? <div aria-live="polite" className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600"><span>{pointsNotice}</span><button className="rounded border border-red-300 px-3 py-1 text-red-600 disabled:cursor-not-allowed disabled:opacity-60" disabled title="A integração com WhatsApp será ativada futuramente" type="button">Avisar customer (em breve)</button></div> : null}
       {!loading && !error && items.length === 0 && <p className="text-gray-500">Nenhuma participação ainda.</p>}
       {!loading && !error && items.length > 0 && <>
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
@@ -91,7 +112,7 @@ export default function ParticipationsPanel() {
           <label className="flex flex-1 flex-col gap-1 text-sm">Buscar<input className="rounded border p-2" placeholder="Cliente, telefone, promoção ou prêmio" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} /></label>
           <label className="flex flex-col gap-1 text-sm sm:w-56">Status<select className="rounded border p-2" value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value as "all" | Participation["status"]); setPage(0); }}><option value="all">Todos</option><option value="pending_registration">Pendente de cadastro</option><option value="pending_confirmation">Aguardando confirmação</option><option value="redeemed">Resgatado</option><option value="rejected">Recusado</option></select></label>
         </div>
-        {filteredItems.length === 0 ? <p className="text-gray-500">Nenhuma participação corresponde aos filtros.</p> : <><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b"><th className="py-2 pr-4">Promoção</th><th className="py-2 pr-4">Prêmio</th><th className="py-2 pr-4">Cliente</th><th className="py-2 pr-4">Data</th><th className="py-2 pr-4">Status</th><th className="py-2">Ação</th></tr></thead><tbody>{visibleItems.map((item) => <tr className="border-b last:border-0" key={item.id}><td className="py-3 pr-4">{item.promotionTitle}</td><td className="py-3 pr-4">{item.prizeDescription}</td><td className="py-3 pr-4">{item.customerName ? <>{item.customerName}<br /><span className="text-xs text-gray-500">{item.customerPhone}</span></> : <span className="text-gray-500">Aguardando cadastro</span>}</td><td className="whitespace-nowrap py-3 pr-4 text-xs text-gray-500">{new Date(item.scrapedAt).toLocaleString("pt-BR")}</td><td className="py-3 pr-4">{statusLabel(item.status)}</td><td className="py-3">{item.status === "pending_confirmation" && <div className="flex gap-2"><button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "confirm")} type="button">Confirmar</button><button className="rounded border px-3 py-1 disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "reject")} type="button">Recusar</button></div>}</td></tr>)}</tbody></table></div><div className="mt-4 flex items-center justify-between gap-4 border-t pt-4"><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={currentPage === 0} onClick={() => setPage((page) => page - 1)} type="button">Anterior</button><span className="text-sm text-gray-500">Página {currentPage + 1} de {pageCount}</span><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={currentPage >= pageCount - 1} onClick={() => setPage((page) => page + 1)} type="button">Próximas 10</button></div></>}
+        {filteredItems.length === 0 ? <p className="text-gray-500">Nenhuma participação corresponde aos filtros.</p> : <><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b"><th className="py-2 pr-4">Promoção</th><th className="py-2 pr-4">Prêmio</th><th className="py-2 pr-4">Cliente</th><th className="py-2 pr-4">Data</th><th className="py-2 pr-4">Status</th><th className="py-2">Ação</th></tr></thead><tbody>{visibleItems.map((item) => <tr className="border-b last:border-0" key={item.id}><td className="py-3 pr-4">{item.promotionTitle}</td><td className="py-3 pr-4">{item.rewardType === "points" ? `${item.pointsAwarded} pontos` : item.prizeDescription}</td><td className="py-3 pr-4">{item.customerName ? <>{item.customerName}<br /><span className="text-xs text-gray-500">{item.customerPhone}</span></> : <span className="text-gray-500">Aguardando cadastro</span>}</td><td className="whitespace-nowrap py-3 pr-4 text-xs text-gray-500">{new Date(item.scrapedAt).toLocaleString("pt-BR")}</td><td className="py-3 pr-4">{statusLabel(item.status)}</td><td className="py-3">{item.status === "pending_confirmation" && <div className="flex gap-2"><button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "confirm")} type="button">Confirmar</button><button className="rounded border px-3 py-1 disabled:opacity-50" disabled={actionId === item.id} onClick={() => void updateStatus(item.id, "reject")} type="button">Recusar</button></div>}</td></tr>)}</tbody></table></div><div className="mt-4 flex items-center justify-between gap-4 border-t pt-4"><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={currentPage === 0} onClick={() => setPage((page) => page - 1)} type="button">Anterior</button><span className="text-sm text-gray-500">Página {currentPage + 1} de {pageCount}</span><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={currentPage >= pageCount - 1} onClick={() => setPage((page) => page + 1)} type="button">Próximas 10</button></div></>}
       </>}
     </section>
   );

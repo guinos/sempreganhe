@@ -1,21 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { requireAdminSession, updatePromotion, deletePromotion, PromotionNotFoundError, PromotionConflictError } = vi.hoisted(() => ({
+const { requireAdminSession, updatePromotion, deletePromotion, recordAdminAudit, PromotionNotFoundError, PromotionConflictError, PromotionLimitError } = vi.hoisted(() => ({
   requireAdminSession: vi.fn(),
   updatePromotion: vi.fn(),
   deletePromotion: vi.fn(),
+  recordAdminAudit: vi.fn(),
   PromotionNotFoundError: class extends Error {},
   PromotionConflictError: class extends Error {},
+  PromotionLimitError: class extends Error {},
 }));
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth", () => ({ requireAdminSession }));
+vi.mock("@/lib/admin-audit", () => ({ recordAdminAudit }));
 vi.mock("@/lib/promotions", () => ({
   updatePromotion,
   deletePromotion,
   promotionUpdateSchema: { parse: vi.fn((value: unknown) => value) },
   PromotionNotFoundError,
   PromotionConflictError,
+  PromotionLimitError,
 }));
 
 import { DELETE, PATCH } from "./route";

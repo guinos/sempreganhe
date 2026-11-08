@@ -46,6 +46,24 @@ O SempreGanhe é um SaaS mobile-first de promoções e fidelização para partne
 - Conferência operacional de um pedido antes da confirmação.
 - Qualidade do link público e do QR Code em materiais impressos.
 
+### Validações recentes em staging
+
+- [x] Confirmar uma participação que gera pontos e verificar o saldo no painel do customer.
+- [x] Validar visualmente o painel do customer após cada operação.
+- [x] Solicitar resgate com 100 pontos.
+- [x] Tentar confirmar uma participação quando o customer já está com 100 pontos.
+- [x] Confirmar que o saldo permanece limitado a 100 pontos.
+- [x] Solicitar, confirmar e recusar um resgate de pontos, verificando a devolução após recusa.
+- [x] Confirmar um resgate e verificar o saldo zerado.
+- [x] Validar que o partner correto aparece no resgate.
+- [x] Impedir confirmação repetida da mesma participação; o botão sai da interface após a decisão e a API aceita ações somente em `pending_confirmation`.
+- [x] Repetir os cenários de pontos com dois partners diferentes e confirmar o isolamento dos saldos.
+- [x] Validar promoções isoladas entre dois partners.
+- [x] Validar participações isoladas entre dois partners.
+- [x] Validar recompensas e resgates separados entre dois partners.
+- [x] Validar os status de promoção ativa, pausada e encerrada.
+- [x] Validar edição do limite principal, bloqueio abaixo dos prêmios já resgatados e persistência após recarregar e reabrir o modal.
+
 ## Fase 0 — Fechar o piloto
 
 Objetivo: provar que o fluxo gera retorno e é simples de operar no dia a dia.
@@ -65,15 +83,16 @@ Critério de saída: um partner consegue operar a promoção sem intervenção t
 
 Objetivo: eliminar riscos que impedem o uso contínuo por um partner.
 
-- [ ] Revisar todos os endpoints com o `security-data-scope-reviewer`.
+- [x] Revisar todos os endpoints com o `security-data-scope-reviewer`.
 - [ ] Implementar RLS no PostgreSQL após a validação do MVP.
-- [ ] Melhorar mensagens de erro, estados de carregamento e recuperação de rede.
+- [x] Melhorar mensagens de erro, estados de carregamento e recuperação de rede nas listagens administrativas.
 - [ ] Persistir/recuperar a participação pública de forma mais resiliente em caso de recarregamento.
 - [ ] Melhorar filtros, ordenação e visualização do painel de participações.
 - [ ] Adicionar paginação ou carregamento incremental para listas maiores.
-- [ ] Adicionar auditoria básica de ações administrativas.
-- [ ] Revisar acessibilidade e comportamento mobile da raspadinha e do painel.
-- [ ] Corrigir avisos de qualidade relevantes e manter `pnpm check` executável.
+- [x] Adicionar auditoria básica de ações administrativas.
+- [x] Revisar acessibilidade e comportamento mobile da raspadinha e do painel.
+- [x] Corrigir o bloqueio do ESLint e manter `pnpm check` executável quando as dependências locais estiverem disponíveis.
+- [ ] Identificar claramente o partner de origem em cada resgate de pontos no painel do customer e no painel administrativo.
 
 Critério de saída: o MVP suporta uso diário sem depender de inspeção manual do banco ou do código.
 
@@ -167,6 +186,7 @@ Ideias são mantidas aqui até terem problema, regra, impacto e critério de suc
 | 23/10/2026 | Validar o MVP antes de RLS, automações e integrações | Reduzir risco e observar a operação real antes de ampliar a arquitetura. |
 | 23/10/2026 | Manter partner como nomenclatura do domínio | Permitir uso por restaurantes e outros estabelecimentos. |
 | 23/10/2026 | Iniciar WhatsApp por uma camada server-only e uma outbox idempotente | Evitar token no banco, mensagens duplicadas e acoplamento ao telefone de contato do partner. |
+| 02/11/2026 | Exibir o partner de origem em cada resgate de pontos | Impedir ambiguidade no uso de pontos isolados por partner e facilitar a operação de confirmação. |
 
 ## Como atualizar
 

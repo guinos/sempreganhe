@@ -13,6 +13,10 @@ type Promotion = {
   startsAt: string;
   endsAt: string;
   maxParticipationsPerCustomer: number;
+  mainPrizeProbability: number;
+  pointsPerParticipation: number;
+  mainPrizeMaxRedemptions: number;
+  mainPrizeRedemptions: number;
 };
 
 const initialForm = {
@@ -23,10 +27,14 @@ const initialForm = {
   startsAt: "",
   endsAt: "",
   maxParticipationsPerCustomer: 1,
+  mainPrizeProbability: 100,
+  pointsPerParticipation: 0,
+  mainPrizeMaxRedemptions: 1,
 };
 const PROMOTIONS_PAGE_SIZE = 10;
 
 type PromotionForm = typeof initialForm;
+type EditPromotionForm = PromotionForm & { mainPrizeRedemptions: number };
 type PromotionFilter = "all" | "active" | "inactive";
 
 function toDateTimeLocal(value: string) {
@@ -40,10 +48,11 @@ export default function PromotionsPanel() {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedQr, setSelectedQr] = useState<{ promotion: Promotion; url: string } | null>(null);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
-  const [editForm, setEditForm] = useState<PromotionForm>(initialForm);
+  const [editForm, setEditForm] = useState<EditPromotionForm>({ ...initialForm, mainPrizeRedemptions: 0 });
   const [promotionFilter, setPromotionFilter] = useState<PromotionFilter>("all");
   const [promotionPage, setPromotionPage] = useState(0);
 
@@ -52,18 +61,25 @@ export default function PromotionsPanel() {
   }
 
   async function fetchPromotions() {
-    const response = await fetch("/api/admin/promotions");
+    const response = await fetch("/api/admin/promotions", { cache: "no-store" });
     if (!response.ok) throw new Error("Não foi possível carregar as promoções.");
     return (await response.json()).promotions as Promotion[];
   }
 
-  useEffect(() => {
+  function reloadPromotions() {
+    setLoading(true);
+    setLoadError(false);
     let cancelled = false;
     void fetchPromotions()
       .then((items) => { if (!cancelled) setPromotions(items); })
-      .catch((error: Error) => { if (!cancelled) setMessage(error.message); })
+      .catch((error: Error) => { if (!cancelled) { setMessage(error.message); setLoadError(true); } })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
+  }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void reloadPromotions(); }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -100,6 +116,10 @@ export default function PromotionsPanel() {
       startsAt: toDateTimeLocal(promotion.startsAt),
       endsAt: toDateTimeLocal(promotion.endsAt),
       maxParticipationsPerCustomer: promotion.maxParticipationsPerCustomer,
+      mainPrizeProbability: promotion.mainPrizeProbability,
+      pointsPerParticipation: promotion.pointsPerParticipation,
+      mainPrizeMaxRedemptions: promotion.mainPrizeMaxRedemptions,
+      mainPrizeRedemptions: promotion.mainPrizeRedemptions,
     });
     setMessage("");
   }
@@ -119,7 +139,12 @@ export default function PromotionsPanel() {
       if (!response.ok) throw new Error(body.error ?? "Não foi possível atualizar a promoção.");
       setEditingPromotion(null);
       setMessage("Promoção atualizada com sucesso.");
-      setPromotions(await fetchPromotions());
+      if (body.promotion) {
+        const savedPromotion = { ...body.promotion, ...editForm, id: editingPromotion.id } as Promotion;
+        setPromotions((current) => current.map((promotion) => promotion.id === savedPromotion.id ? savedPromotion : promotion));
+      } else {
+        setPromotions(await fetchPromotions());
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Não foi possível atualizar a promoção.");
     } finally {
@@ -168,6 +193,7 @@ export default function PromotionsPanel() {
         <label className="flex flex-col gap-1 text-sm">Código público<input className="rounded border p-2" required value={form.publicCode} onChange={(event) => setForm({ ...form, publicCode: event.target.value })} /></label>
         <label className="flex flex-col gap-1 text-sm">Status<select className="rounded border p-2" value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value })}><option value="draft">Rascunho</option><option value="active">Ativa</option><option value="paused">Pausada</option></select></label>
         <label className="flex flex-col gap-1 text-sm">Participações máximas por cliente<input className="rounded border p-2" min="1" required type="number" value={form.maxParticipationsPerCustomer} onChange={(event) => setForm({ ...form, maxParticipationsPerCustomer: Number(event.target.value) })} /></label>
+        <div className="grid gap-4 sm:grid-cols-3"><label className="flex flex-col gap-1 text-sm">Chance do prêmio principal (%)<input className="rounded border p-2" min="0" max="100" required type="number" value={form.mainPrizeProbability} onChange={(event) => setForm({ ...form, mainPrizeProbability: Number(event.target.value) })} /></label><label className="flex flex-col gap-1 text-sm">Pontos por participação<input className="rounded border p-2" min="0" required type="number" value={form.pointsPerParticipation} onChange={(event) => setForm({ ...form, pointsPerParticipation: Number(event.target.value) })} /></label><label className="flex flex-col gap-1 text-sm">Máximo de prêmios principais<input className="rounded border p-2" min="1" required type="number" value={form.mainPrizeMaxRedemptions} onChange={(event) => setForm({ ...form, mainPrizeMaxRedemptions: Number(event.target.value) })} /></label></div>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm">Início<input className="rounded border p-2" required type="datetime-local" value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} /></label>
           <label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" required type="datetime-local" value={form.endsAt} onChange={(event) => setForm({ ...form, endsAt: event.target.value })} /></label>
@@ -178,10 +204,10 @@ export default function PromotionsPanel() {
 
       <div className="rounded-xl border p-6" id="promotions-list">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4"><h2 className="text-xl font-semibold">Promoções cadastradas</h2><label className="flex items-center gap-2 text-sm text-gray-600">Filtrar<select aria-label="Filtrar promoções por status" className="rounded border p-2 text-gray-900" value={promotionFilter} onChange={(event) => { setPromotionFilter(event.target.value as PromotionFilter); setPromotionPage(0); }}><option value="all">Todas ({promotions.length})</option><option value="active">Ativas ({promotions.filter((promotion) => promotion.status === "active").length})</option><option value="inactive">Inativas ({promotions.filter((promotion) => promotion.status !== "active").length})</option></select></label></div>
-        {loading ? <p>Carregando...</p> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : filteredPromotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção encontrada neste filtro.</p> : <><ul className="divide-y">{visiblePromotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p><div className="mt-2 flex flex-wrap gap-3"><a aria-label={`Abrir raspadinha: ${promotion.title}`} className="inline-flex text-xs font-medium text-blue-600 underline hover:text-blue-800" href={`/p/${encodeURIComponent(promotion.publicCode)}`} rel="noreferrer" target="_blank">Abrir raspadinha</a><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => setSelectedQr({ promotion, url: publicUrl(promotion) })} type="button">Ver QR Code</button><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => startEditing(promotion)} type="button">Editar</button>{promotion.status === "active" && <button className="text-xs font-medium text-red-600 underline hover:text-red-800" disabled={saving} onClick={() => void pausePromotion(promotion)} type="button">Inativar</button>}</div></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul><div className="mt-4 flex items-center justify-between gap-4 border-t pt-4"><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={promotionPage === 0} onClick={() => setPromotionPage((page) => page - 1)} type="button">Anterior</button><span className="text-sm text-gray-500">Página {promotionPage + 1} de {pageCount}</span><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={promotionPage >= pageCount - 1} onClick={() => setPromotionPage((page) => page + 1)} type="button">Próximas 10</button></div></>}
+        {loading ? <p aria-live="polite">Carregando…</p> : loadError ? <div className="flex flex-wrap items-center gap-3"><p className="text-sm text-red-600" role="alert">Não foi possível carregar as promoções.</p><button className="rounded border px-3 py-2 text-sm" onClick={() => reloadPromotions()} type="button">Tentar novamente</button></div> : promotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção cadastrada.</p> : filteredPromotions.length === 0 ? <p className="text-gray-500">Nenhuma promoção encontrada neste filtro.</p> : <><ul className="divide-y">{visiblePromotions.map((promotion) => <li className="py-4" key={promotion.id}><div className="flex items-start justify-between gap-4"><div><p className="font-medium">{promotion.title}</p><p className="text-sm text-gray-600">{promotion.prizeDescription}</p><p className="text-xs text-gray-500">Código: {promotion.publicCode}</p><div className="mt-2 flex flex-wrap gap-3"><a aria-label={`Abrir raspadinha: ${promotion.title}`} className="inline-flex text-xs font-medium text-blue-600 underline hover:text-blue-800" href={`/p/${encodeURIComponent(promotion.publicCode)}`} rel="noreferrer" target="_blank">Abrir raspadinha</a><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => setSelectedQr({ promotion, url: publicUrl(promotion) })} type="button">Ver QR Code</button><button className="text-xs font-medium text-blue-600 underline hover:text-blue-800" onClick={() => startEditing(promotion)} type="button">Editar</button>{promotion.status === "active" && <button className="text-xs font-medium text-red-600 underline hover:text-red-800" disabled={saving} onClick={() => void pausePromotion(promotion)} type="button">Inativar</button>}</div></div><span className="rounded bg-gray-100 px-2 py-1 text-xs">{promotion.status}</span></div></li>)}</ul><div className="mt-4 flex items-center justify-between gap-4 border-t pt-4"><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={promotionPage === 0} onClick={() => setPromotionPage((page) => page - 1)} type="button">Anterior</button><span className="text-sm text-gray-500">Página {promotionPage + 1} de {pageCount}</span><button className="rounded border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40" disabled={promotionPage >= pageCount - 1} onClick={() => setPromotionPage((page) => page + 1)} type="button">Próximas 10</button></div></>}
       </div>
 
-      {editingPromotion ? <div aria-label="Editar promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setEditingPromotion(null)} role="presentation"><form aria-labelledby="edit-promotion-title" className="flex max-h-[90vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} onSubmit={(event) => void updatePromotion(event)}><div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-semibold" id="edit-promotion-title">Editar promoção</h3><p className="text-sm text-gray-500">Atualize o período ou altere o status da promoção.</p></div><button aria-label="Fechar edição" className="text-2xl leading-none text-gray-500" onClick={() => setEditingPromotion(null)} type="button">×</button></div><label className="flex flex-col gap-1 text-sm">Título<input className="rounded border p-2" required value={editForm.title} onChange={(event) => setEditForm({ ...editForm, title: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Prêmio<input className="rounded border p-2" required value={editForm.prizeDescription} onChange={(event) => setEditForm({ ...editForm, prizeDescription: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Código público<input className="rounded border p-2" required value={editForm.publicCode} onChange={(event) => setEditForm({ ...editForm, publicCode: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Status<select className="rounded border p-2" value={editForm.status} onChange={(event) => setEditForm({ ...editForm, status: event.target.value })}><option value="draft">Rascunho</option><option value="active">Ativa</option><option value="paused">Inativa</option><option value="ended">Encerrada</option></select></label><div className="grid gap-4 sm:grid-cols-2"><label className="flex flex-col gap-1 text-sm">Início<input className="rounded border p-2" required type="datetime-local" value={editForm.startsAt} onChange={(event) => setEditForm({ ...editForm, startsAt: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" required type="datetime-local" value={editForm.endsAt} onChange={(event) => setEditForm({ ...editForm, endsAt: event.target.value })} /></label></div><div className="flex justify-end gap-3"><button className="rounded border px-4 py-2" onClick={() => setEditingPromotion(null)} type="button">Cancelar</button><button className="rounded bg-black px-4 py-2 text-white disabled:opacity-50" disabled={saving} type="submit">{saving ? "Salvando..." : "Salvar alterações"}</button></div></form></div> : null}
+      {editingPromotion ? <div aria-label="Editar promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setEditingPromotion(null)} role="presentation"><form aria-labelledby="edit-promotion-title" aria-modal="true" className="flex max-h-[90vh] w-full max-w-lg flex-col gap-4 overflow-y-auto rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} onSubmit={(event) => void updatePromotion(event)} role="dialog"><div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-semibold" id="edit-promotion-title">Editar promoção</h3><p className="text-sm text-gray-500">Atualize o período, a pontuação ou o status.</p></div><button aria-label="Fechar edição" className="text-2xl leading-none text-gray-500" onClick={() => setEditingPromotion(null)} type="button">×</button></div><label className="flex flex-col gap-1 text-sm">Título<input className="rounded border p-2" name="title" required value={editForm.title} onChange={(event) => setEditForm({ ...editForm, title: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Prêmio<input className="rounded border p-2" name="prizeDescription" required value={editForm.prizeDescription} onChange={(event) => setEditForm({ ...editForm, prizeDescription: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Código público<input className="rounded border p-2" name="publicCode" required value={editForm.publicCode} onChange={(event) => setEditForm({ ...editForm, publicCode: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Status<select className="rounded border p-2" name="status" value={editForm.status} onChange={(event) => setEditForm({ ...editForm, status: event.target.value })}><option value="draft">Rascunho</option><option value="active">Ativa</option><option value="paused">Inativa</option><option value="ended">Encerrada</option></select></label><label className="flex flex-col gap-1 text-sm">Participações máximas por cliente<input className="rounded border p-2" min="1" name="maxParticipationsPerCustomer" required type="number" value={editForm.maxParticipationsPerCustomer} onChange={(event) => setEditForm({ ...editForm, maxParticipationsPerCustomer: Number(event.target.value) })} /></label><div className="grid gap-4 sm:grid-cols-3"><label className="flex flex-col gap-1 text-sm">Chance principal (%)<input className="rounded border p-2" min="0" max="100" name="mainPrizeProbability" required type="number" value={editForm.mainPrizeProbability} onChange={(event) => setEditForm({ ...editForm, mainPrizeProbability: Number(event.target.value) })} /></label><label className="flex flex-col gap-1 text-sm">Pontos<input className="rounded border p-2" min="0" name="pointsPerParticipation" required type="number" value={editForm.pointsPerParticipation} onChange={(event) => setEditForm({ ...editForm, pointsPerParticipation: Number(event.target.value) })} /></label><label className="flex flex-col gap-1 text-sm">Limite principal<input className="rounded border p-2" min={Math.max(1, editForm.mainPrizeRedemptions)} name="mainPrizeMaxRedemptions" required type="number" value={editForm.mainPrizeMaxRedemptions} onChange={(event) => setEditForm({ ...editForm, mainPrizeMaxRedemptions: Number(event.target.value) })} /><span className="text-xs text-gray-500">Já resgatados: {editForm.mainPrizeRedemptions}. O limite não pode ser menor.</span></label></div><div className="grid gap-4 sm:grid-cols-2"><label className="flex flex-col gap-1 text-sm">Início<input className="rounded border p-2" name="startsAt" required type="datetime-local" value={editForm.startsAt} onChange={(event) => setEditForm({ ...editForm, startsAt: event.target.value })} /></label><label className="flex flex-col gap-1 text-sm">Fim<input className="rounded border p-2" name="endsAt" required type="datetime-local" value={editForm.endsAt} onChange={(event) => setEditForm({ ...editForm, endsAt: event.target.value })} /></label></div><div className="flex justify-end gap-3"><button className="rounded border px-4 py-2" onClick={() => setEditingPromotion(null)} type="button">Cancelar</button><button className="rounded bg-black px-4 py-2 text-white disabled:opacity-50" disabled={saving} type="submit">{saving ? "Salvando…" : "Salvar alterações"}</button></div></form></div> : null}
 
       {selectedQr ? <div aria-label="QR Code da promoção" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedQr(null)} role="presentation"><div aria-labelledby="qr-title" aria-modal="true" className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">Uma chance especial para você</p><h3 className="mt-1 text-2xl font-bold" id="qr-title">Raspe e Ganhe</h3><p className="mt-2 text-sm text-gray-500">Raspe, descubra seu prêmio e aproveite esta promoção exclusiva.</p><p className="mt-3 text-sm font-semibold text-gray-800">Acesse a promoção pelo QR Code abaixo.</p></div><button aria-label="Fechar" className="text-2xl leading-none text-gray-500" onClick={() => setSelectedQr(null)} type="button">×</button></div><div className="mt-5 flex justify-center rounded-lg bg-white p-3"><QRCodeSVG bgColor="#ffffff" fgColor="#111111" marginSize={4} size={240} title={`QR Code para ${selectedQr.promotion.title}`} value={selectedQr.url} /></div></div></div> : null}
     </section>

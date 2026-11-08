@@ -64,6 +64,27 @@
       "when": 1793647000000,
       "tag": "0009_customer-accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793655483350,
+      "tag": "0010_points-system",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793740160545,
+      "tag": "0011_customer-password-reset-tokens",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794168195073,
+      "tag": "0012_admin-audit-logs",
+      "breakpoints": true
     }
   ]
 }

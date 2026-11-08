@@ -4,7 +4,6 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 import security from "eslint-plugin-security";
 import importX from "eslint-plugin-import-x";
-import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import drizzle from "eslint-plugin-drizzle";
@@ -32,7 +31,9 @@ export default defineConfig([
       "security/detect-possible-timing-attacks": "warn",
       "security/detect-unsafe-regex": "warn",
       "security/detect-child-process": "warn",
-      "import-x/no-unresolved": "error",
+      // TypeScript performs module and path resolution in `pnpm typecheck`.
+      // The ESLint TypeScript resolver hangs on Windows before linting files.
+      "import-x/no-unresolved": "off",
       "import-x/no-duplicates": "error",
       "react/jsx-key": "warn",
       "react/no-array-index-key": "warn",
@@ -44,7 +45,6 @@ export default defineConfig([
   {
     files: ["src/**/*.{ts,tsx}"],
     plugins: { security, "import-x": importX, drizzle },
-    settings: { "import-x/resolver": { typescript: createTypeScriptImportResolver() } },
     rules: {
       "drizzle/enforce-delete-with-where": ["error", { drizzleObjectName: ["db"] }],
       "drizzle/enforce-update-with-where": ["error", { drizzleObjectName: ["db"] }],
@@ -70,9 +70,6 @@ export default defineConfig([
       "quality/no-direct-console": "off",
       "quality/no-direct-data-access": "off",
     },
-  },
-  {
-    settings: { "import-x/resolver": { typescript: createTypeScriptImportResolver() } },
   },
   globalIgnores(["drizzle/**", "graphify-out/**", "**/*.tsbuildinfo"]),
 ]);
